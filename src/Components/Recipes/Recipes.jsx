@@ -1,8 +1,12 @@
-import React from 'react'
+import Recipe from '@/Components/Recipes/Recipe';
 
-const Recipes = () => {
-  return (
-    <div>Recipes</div>
+const Recipes = ({ recipes }) => {
+  return (recipes.length === 0 ? (
+    <p>No recipes available.</p>
+  ) :
+    recipes.map((recipe) => (
+      <Recipe key={recipe.id} {...recipe} />
+    ))
   )
 }
 

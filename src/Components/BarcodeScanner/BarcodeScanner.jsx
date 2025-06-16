@@ -6,62 +6,61 @@ import { BarcodeFormat, DecodeHintType } from '@zxing/library'
 
 export default function BarcodeScanner({ onResult }) {
   const videoRef = useRef(null)
-  const controlsRef = useRef(null)
   const [error, setError] = useState(null)
 
   useEffect(() => {
     const hints = new Map()
-    hints.set(DecodeHintType.POSSIBLE_FORMATS, [ // Defino los formatos de código de barras que soporta
-      BarcodeFormat.EAN_13,
-      BarcodeFormat.CODE_128,
-      BarcodeFormat.EAN_8,
-      BarcodeFormat.UPC_A,
+    hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+      BarcodeFormat.EAN_13
     ])
 
     const codeReader = new BrowserMultiFormatReader(hints)
+    let hasScanned = false
+    let isMounted = true
+    let stream
 
-    let hasScanned = false // Evita múltiples lecturas
-    let isMounted = true // Para evitar actualizaciones de estado después de desmontar
-
-    const startScanner = async () => {
+    const init = async () => {
       try {
-        const devices = await BrowserMultiFormatReader.listVideoInputDevices() // Obtiene las cámaras disponibles
-        if (!devices.length) throw new Error('No se encontró cámara')
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: 'environment',
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+        })
 
-        const deviceId = devices[0].deviceId // Usa la primera cámara disponible
+        videoRef.current.srcObject = stream
+        await videoRef.current.play()
 
-        const controls = await codeReader.decodeFromVideoDevice( 
-          deviceId,
-          videoRef.current,
-          (result, err, controls) => {
-            if (!isMounted || hasScanned) return
+        let lastScan = 0
 
-            if (result) { // Si se detecta un código
-              hasScanned = true // Evita que se procese más de una vez
-              const code = result.getText() // Obtiene el texto del código escaneado
-              console.log('✅ Código leído:', code) 
-              onResult(code) // Llama a la función onResult con el código escaneado
-              controls.stop() // Detiene el escáner
-            }
+codeReader.decodeFromStream(stream, videoRef.current, (result, err) => {
+  const now = Date.now()
+  if (!isMounted) return
 
-            if (err && err.name !== 'NotFoundException') {
-              console.error('❌ Error del escáner:', err)
-            }
-          }
-        )
+  if (result && now - lastScan > 3000) {
+    lastScan = now
+    const code = result.getText()
+    console.log('✅ Código leído:', code)
+    onResult(code)
+  }
 
-        controlsRef.current = controls // Guarda los controles para poder detener el escáner más tarde
+  if (err && err.name !== 'NotFoundException') {
+    console.error('❌ Escaneo falló:', err)
+  }
+})
+
       } catch (e) {
-        console.error('Error al iniciar escáner:', e)
-        if (isMounted) setError(e.message)
+        console.error('🚨 Error iniciando escáner:', e)
+        setError(e.message)
       }
     }
 
-    startScanner()
+    init()
 
     return () => {
       isMounted = false
-      controlsRef.current?.stop?.()
+      stream?.getTracks()?.forEach(t => t.stop())
     }
   }, [onResult])
 
@@ -69,8 +68,7 @@ export default function BarcodeScanner({ onResult }) {
     <div>
       <video
         ref={videoRef}
-        style={{ width: '100%', height: 'auto' }}
-        autoPlay
+        style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
         muted
         playsInline
       />

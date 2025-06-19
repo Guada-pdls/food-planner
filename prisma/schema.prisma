@@ -1,0 +1,159 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id               Int     @id @default(autoincrement())
+  email            String  @unique
+  type             String
+  provider         String
+  provider_account String
+  refresh_token    String?
+  access_token     String?
+  expires_at       Int?
+  token_type       String?
+  scope            String?
+  id_token         String?
+  session_state    String?
+
+  user User @relation(fields: [email], references: [email], onDelete: Cascade)
+
+  @@unique([provider, provider_account])
+}
+
+model Session {
+  id            Int      @id @default(autoincrement())
+  session_token String   @unique
+  email         String
+  expires       DateTime
+
+  user User @relation(fields: [email], references: [email], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model User {
+  email               String  @id
+  name                String
+  age                 Int
+  height              Float?
+  weight              Float?
+  physical_activity   String?
+  gender              String?
+  dislike_ingredients String? // Comma-separated list of ingredient ids
+
+  meals UserMeal[]
+
+  // Relations
+  accounts Account[]
+  sessions Session[]
+}
+
+model Meal {
+  meal_id Int      @id @default(autoincrement())
+  portion Float?
+  date    DateTime
+  type    String?
+
+  users   UserMeal[]
+  recipes MealRecipe[]
+}
+
+model UserMeal {
+  email   String
+  meal_id Int
+
+  user User @relation(fields: [email], references: [email], onDelete: Cascade)
+  meal Meal @relation(fields: [meal_id], references: [meal_id], onDelete: Cascade)
+
+  @@id([email, meal_id])
+}
+
+model Recipe {
+  recipe_id     Int     @id @default(autoincrement())
+  procedure     String?
+  cooking_time  Int?
+  serving_count Int?
+  name          String?
+
+  meals          MealRecipe[]
+  ingredients    RecipeIngredient[]
+  types          RecipeType[]
+  nutrition_info RecipeInfo?
+}
+
+model MealRecipe {
+  meal_id   Int
+  recipe_id Int
+
+  meal   Meal   @relation(fields: [meal_id], references: [meal_id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipe_id], references: [recipe_id], onDelete: Cascade)
+
+  @@id([meal_id, recipe_id])
+}
+
+model Ingredient {
+  ingredient_id Int    @id @default(autoincrement())
+  name          String
+  storage       String // values like "freezer", "fridge"
+
+  recipes RecipeIngredient[]
+}
+
+model RecipeIngredient {
+  recipe_id     Int
+  ingredient_id Int
+
+  recipe     Recipe     @relation(fields: [recipe_id], references: [recipe_id], onDelete: Cascade)
+  ingredient Ingredient @relation(fields: [ingredient_id], references: [ingredient_id], onDelete: Cascade)
+
+  @@id([recipe_id, ingredient_id])
+}
+
+model NutritionInfo {
+  nutrition_id Int    @id @default(autoincrement())
+  protein      Float?
+  carbs        Float?
+  fats         Float?
+  calories     Float?
+  fiber        Float?
+  quantity     Float?
+
+  recipe RecipeInfo?
+}
+
+model RecipeInfo {
+  recipe_id    Int @unique
+  nutrition_id Int @unique
+
+  recipe Recipe        @relation(fields: [recipe_id], references: [recipe_id], onDelete: Cascade)
+  info   NutritionInfo @relation(fields: [nutrition_id], references: [nutrition_id], onDelete: Cascade)
+
+  @@id([recipe_id])
+}
+
+model RecipeType {
+  recipe_id Int
+  type      String
+
+  recipe Recipe @relation(fields: [recipe_id], references: [recipe_id], onDelete: Cascade)
+
+  @@id([recipe_id, type])
+}

@@ -24,7 +24,7 @@ const getUserData = async (email) => {
 
 const getUserPreferences = async (email) => {
     try {
-        const preferences = await prisma.user_preferences.findUnique({
+        const preferences = await prisma.user.findUnique({
             where: { email },
             select: {
                 dislike_ingredients: true

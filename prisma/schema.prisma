@@ -14,31 +14,31 @@ datasource db {
 }
 
 model Account {
-  id               Int     @id @default(autoincrement())
-  email            String  @unique
-  type             String
-  provider         String
-  provider_account String
-  refresh_token    String?
-  access_token     String?
-  expires_at       Int?
-  token_type       String?
-  scope            String?
-  id_token         String?
-  session_state    String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  id_token          String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  session_state     String?
 
-  user User @relation(fields: [email], references: [email], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([provider, provider_account])
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-  id            Int      @id @default(autoincrement())
-  session_token String   @unique
-  email         String
-  expires       DateTime
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
 
-  user User @relation(fields: [email], references: [email], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
@@ -50,9 +50,13 @@ model VerificationToken {
 }
 
 model User {
-  email               String  @id
-  name                String
-  age                 Int
+  id                  String    @id @default(cuid())
+  email               String?   @unique
+  emailVerified       DateTime?
+  image               String?
+  name                String?
+
+  age                 Int?
   height              Float?
   weight              Float?
   physical_activity   String?
@@ -77,13 +81,13 @@ model Meal {
 }
 
 model UserMeal {
-  email   String
+  id      String
   meal_id Int
 
-  user User @relation(fields: [email], references: [email], onDelete: Cascade)
+  user User @relation(fields: [id], references: [id], onDelete: Cascade)
   meal Meal @relation(fields: [meal_id], references: [meal_id], onDelete: Cascade)
 
-  @@id([email, meal_id])
+  @@id([id, meal_id])
 }
 
 model Recipe {

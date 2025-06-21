@@ -3,6 +3,16 @@ import GoogleProvider from "next-auth/providers/google"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 
+function isComplete(user) {
+  return Boolean(
+    user?.age &&
+    user?.height &&
+    user?.weight &&
+    user?.physical_activity &&
+    user?.gender
+  );
+}
+
 export const authOptions = {
     adapter: PrismaAdapter(prisma),
     providers: [
@@ -27,10 +37,41 @@ export const authOptions = {
             return baseUrl
         },
         async session({ session, token, user }) {
-            // Add user ID to the session object
-            session.user.id = user?.id || token?.sub
+            if (session.user && token.sub) {
+                session.user.id = token.sub
+                session.user.data_completed = token.data_completed || false
+                session.user.dislike_ingredients = token.dislike_ingredients || []
+            }
             return session
-        }
+        },
+        async jwt({ token, user, trigger, session }) {
+            if (user) {
+                // Solo en el primer inicio de sesión
+                const dbUser = await prisma.user.findUnique({
+                    where: { id: user.id },
+                    select: {
+                        age: true,
+                        height: true,
+                        weight: true,
+                        physical_activity: true,
+                        gender: true,
+                        dislike_ingredients: true,
+                    }
+                })
+
+                token.data_completed = isComplete(dbUser)
+                token.dislike_ingredients = dbUser?.dislike_ingredients ? JSON.parse(dbUser.dislike_ingredients) : []
+            }
+            if (trigger === "update") {
+                console.log("Actualizando token JWT")
+                const dbUser = await prisma.user.findUnique({
+                    where: { id: token.sub },
+                })
+                token.data_completed = isComplete(dbUser)
+                token.dislike_ingredients = dbUser?.dislike_ingredients ? JSON.parse(dbUser.dislike_ingredients) : []
+            }
+            return token
+        },
     },
     colorScheme: {
         primary: "#58C521",

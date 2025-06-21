@@ -1,5 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Preferences from '@/Components/Preferences/Preferences'
 const background = "@container min-h-screen flex justify-center bg-base-100";
 
@@ -12,8 +14,18 @@ const Page = () => {
     Lácteos: ["Leche", "Queso parmesano", "Yogurt", "Queso crema"],
     Dulces: ["Chocolate", "Dulce de leche", "Edulcorante", "Nutella"],
   };
-
+  
   const [selectedItems, setSelectedItems] = useState({});
+  const router = useRouter();
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    // Verificar si hay sesión al cargar la página
+    if (!session) {
+      router.push("/api/auth/signin");
+    }
+  }
+  , [session, router]);
 
   const toggleItem = (category, item) => {
     setSelectedItems((prev) => {
@@ -27,14 +39,34 @@ const Page = () => {
     });
   };
 
-  const handleClickButton = () => {
+  const handleClickButton = async () => {
     const selectedList = [];
     for (const category in selectedItems) {
       if (selectedItems[category].length > 0) {
         selectedList.push(...selectedItems[category]);
       }
     }
-    console.log("Seleccionados:", selectedList);
+
+    try {
+      const response = await fetch('/api/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: session?.user?.email,
+          preferences: selectedList,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error('Error al enviar las preferencias');
+      } else {
+        await fetch('/api/auth/session?update=true'); // Actualizar la sesión
+        router.push("/home");
+      }
+    } catch (error) {
+      console.error("Error al enviar las preferencias:", error);     
+    }
   };
 
   return (

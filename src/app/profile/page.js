@@ -1,7 +1,7 @@
 
 const page = () => {
   return (
-    <div>Lista de compras</div>
+    <main className="pb-20">Perfil</main>
   )
 }
 

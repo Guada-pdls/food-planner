@@ -9,7 +9,7 @@ export default function Logout() {
 
     return (
         <button
-            className="flex items-center justify-center w-full px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+            className="flex w-full text-black py-2 bg-error justify-center rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
             onClick={handleLogout}
             aria-label="Cerrar sesión"
         >

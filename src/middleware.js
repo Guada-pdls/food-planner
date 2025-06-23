@@ -5,8 +5,6 @@ export async function middleware(req) {
   const token = await getToken({ req });
   const { pathname } = req.nextUrl;
 
-  console.log(`Middleware ejecutado para: ${pathname}`);
-
   const isPublic = [
     '/api',
     '/_next',

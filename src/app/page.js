@@ -26,10 +26,10 @@ export default async function Home() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center ">
+    <main className="flex flex-grow flex-col items-center justify-center pb-20">
       <h1 className="text-2xl font-bold mb-4">Bienvenido, {user.name}!</h1>
       <Logout />
-    </div>
+    </main>
   );
 
 }

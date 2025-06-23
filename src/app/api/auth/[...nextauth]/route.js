@@ -34,7 +34,7 @@ export const authOptions = {
     },
     callbacks: {
         async redirect({ baseUrl }) {
-            return baseUrl
+            return `${baseUrl}/profile`
         },
         async session({ session, token, user }) {
             if (session.user && token.sub) {

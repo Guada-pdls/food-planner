@@ -62,7 +62,7 @@ const Page = () => {
         throw new Error('Error al enviar las preferencias');
       } else {
         await fetch('/api/auth/session?update=true'); // Actualizar la sesión
-        router.push("/home");
+        router.push("/calendar");
       }
     } catch (error) {
       console.error("Error al enviar las preferencias:", error);     

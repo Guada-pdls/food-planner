@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getToken } from 'next-auth/jwt'
 
 export async function POST(req) {
   try {
@@ -60,5 +61,24 @@ export async function POST(req) {
       { error: 'Error saving user data' },
       { status: 500 }
     );
+  }
+}
+
+export async function PUT(req) {
+  const token = await getToken({ req })
+
+  try {
+    const body = await req.json();
+    const { weight, height, age, physical_activity } = body;
+
+    await prisma.user.update({
+      where: { email: token.email },
+      data: { weight, height, age, physical_activity },
+    });
+
+    return NextResponse.json({ message: 'Datos actualizados' });
+  } catch (error) {
+    console.error('Error al actualizar perfil:', error);
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Recipes from '@/Components/Recipes/Recipes'
 import RecipeSearcher from '@/Components/Recipes/RecipeSearcher'
 
-const Page = () => {
+const page = () => {
   const [searchQuery, setSearchQuery] = useState('')
 
   return (
@@ -22,4 +22,4 @@ const Page = () => {
   )
 }
 
-export default Page
+export default page

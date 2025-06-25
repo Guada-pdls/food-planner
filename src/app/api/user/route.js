@@ -3,7 +3,7 @@ import { getToken } from 'next-auth/jwt'
 import {
   upsertUserProfile,
   updateUserProfileByEmail,
-} from '@/lib/repos/userRepo'
+} from '@/lib/repos/user'
 
 export async function POST(req) {
   try {

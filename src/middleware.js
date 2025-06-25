@@ -23,7 +23,6 @@ export async function middleware(req) {
 
   // Autenticado pero no completó perfil
   if (token && token.data_completed !== true && (pathname !== '/survey' && pathname !== '/preferences')) {
-    console.log(token)
     const surveyUrl = req.nextUrl.clone();
     surveyUrl.pathname = '/survey';
     return NextResponse.redirect(surveyUrl);

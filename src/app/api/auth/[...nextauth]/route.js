@@ -2,6 +2,7 @@ import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
+import { getUserData } from "@/lib/repos/user";
 
 function isComplete(user) {
   return Boolean(
@@ -61,12 +62,11 @@ export const authOptions = {
 
                 token.data_completed = isComplete(dbUser)
                 token.dislike_ingredients = dbUser?.dislike_ingredients ? JSON.parse(dbUser.dislike_ingredients) : []
+                console.log("Token JWT creado:", token)
             }
             if (trigger === "update") {
-                console.log("Actualizando token JWT")
-                const dbUser = await prisma.user.findUnique({
-                    where: { id: token.sub },
-                })
+                const dbUser = await getUserData(token.email)
+                console.log("da false?", dbUser)
                 token.data_completed = isComplete(dbUser)
                 token.dislike_ingredients = dbUser?.dislike_ingredients ? JSON.parse(dbUser.dislike_ingredients) : []
             }

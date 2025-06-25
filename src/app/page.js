@@ -1,9 +1,7 @@
-import GoogleButton from "@/Components/Auth/GoogleButton";
 import Logout from "@/Components/Auth/Logout";
-import SignIn from "@/Components/Auth/SignIn";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { getUserData, getUserPreferences } from "@/lib/user";
+import { getUserData, getUserPreferences } from "@/lib/repos/user";
 
 export default async function Home() {
   

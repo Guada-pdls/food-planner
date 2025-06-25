@@ -50,11 +50,11 @@ model VerificationToken {
 }
 
 model User {
-  id                  String    @id @default(cuid())
-  email               String?   @unique
-  emailVerified       DateTime?
-  image               String?
-  name                String?
+  id            String    @id @default(cuid())
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  name          String?
 
   age                 Int?
   height              Float?
@@ -92,10 +92,13 @@ model UserMeal {
 
 model Recipe {
   recipe_id     Int     @id @default(autoincrement())
-  procedure     String?
+  procedure     String? @db.Text
   cooking_time  Int?
   serving_count Int?
   name          String?
+  fridge        Int?
+  freezer       Int?
+  image         String?
 
   meals          MealRecipe[]
   ingredients    RecipeIngredient[]
@@ -113,10 +116,23 @@ model MealRecipe {
   @@id([meal_id, recipe_id])
 }
 
+enum MealType {
+  desayuno
+  almuerzo
+  merienda
+  cena
+}
+
 model Ingredient {
-  ingredient_id Int    @id @default(autoincrement())
-  name          String
-  storage       String // values like "freezer", "fridge"
+  ingredient_id   Int     @id @default(autoincrement())
+  name            String  @unique
+  freezer         Int
+  fridge          Int
+  recommendations String?
+  image           String?
+
+  nutrition_info NutritionInfo? @relation("IngredientNutrition", fields: [nutrition_id], references: [nutrition_id])
+  nutrition_id   Int?           @unique
 
   recipes RecipeIngredient[]
 }
@@ -140,7 +156,8 @@ model NutritionInfo {
   fiber        Float?
   quantity     Float?
 
-  recipe RecipeInfo?
+  recipe     RecipeInfo?   @relation("RecipeNutrition")
+  ingredient Ingredient?   @relation("IngredientNutrition")
 }
 
 model RecipeInfo {
@@ -148,14 +165,14 @@ model RecipeInfo {
   nutrition_id Int @unique
 
   recipe Recipe        @relation(fields: [recipe_id], references: [recipe_id], onDelete: Cascade)
-  info   NutritionInfo @relation(fields: [nutrition_id], references: [nutrition_id], onDelete: Cascade)
+  info   NutritionInfo @relation("RecipeNutrition", fields: [nutrition_id], references: [nutrition_id], onDelete: Cascade)
 
   @@id([recipe_id])
 }
 
 model RecipeType {
   recipe_id Int
-  type      String
+  type      MealType
 
   recipe Recipe @relation(fields: [recipe_id], references: [recipe_id], onDelete: Cascade)
 

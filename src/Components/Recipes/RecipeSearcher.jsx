@@ -2,9 +2,15 @@
 import { useState } from 'react'
 import { CiSearch } from 'react-icons/ci'
 
-const RecipeSearcher = () => {
+const RecipeSearcher = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [opened, setOpen] = useState(false)
+
+  const handleChange = (e) => {
+    const value = e.target.value
+    setSearchQuery(value)
+    onSearch(value)
+  }
 
   return (
     <div className='relative'>
@@ -21,7 +27,7 @@ const RecipeSearcher = () => {
           type='text'
           placeholder='Buscar receta...'
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={handleChange}
           className='input input-bordered w-full max-w-xs'
         />
       )}

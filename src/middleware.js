@@ -6,6 +6,7 @@ export async function middleware(req) {
   const { pathname } = req.nextUrl;
 
   const isPublic = [
+    '/',
     '/api',
     '/_next',
     '/favicon.ico',

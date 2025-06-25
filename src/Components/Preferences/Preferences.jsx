@@ -1,4 +1,3 @@
-// components/CategoryBlock.jsx
 import React from "react";
 
 const Preferences = ({ category, items, selectedItems, toggleItem }) => {

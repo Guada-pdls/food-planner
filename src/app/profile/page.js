@@ -1,5 +1,5 @@
 import Profile from "@/Components/Profile/Profile"
-import { getUserData } from "@/lib/user";
+import { getUserData } from "@/lib/repos/user";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import Logout from "@/Components/Auth/Logout";

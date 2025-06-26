@@ -1,56 +1,23 @@
-'use client'
-
-import { useState } from 'react'
+import CalendarMonthTable from "@/Components/Calendar/CalendarMonthTable";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 export default function Page() {
   
-
     return (
-        <main  className='mb-6 w-full h-screen '>
-            <div className="overflow-x-auto h-full " >
-                <table className="table table-xs h-full [&>thead>tr>th]:text-[2.5vw] [&>tbody>tr>th]:text-[3.5vw]" > 
-                    <thead >
-                        <tr>
-                            <th></th>
-                            <th>Desayuno</th>
-                            <th>Almuerzo</th>
-                            <th>Merienda</th>
-                            <th>Cena</th>
-                        
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>Lunes</th>
-                            <td>Receta</td>
-                        </tr>
-
-                        <tr>
-                            <th>Martes</th>
-                        </tr>
-
-                        <tr>
-                            <th>Miercoles</th>
-                        </tr>
-                        <tr>
-                            <th>Jueves</th>
-                        </tr>
-                        
-                        <tr>
-                            <th>Viernes</th>
-                        </tr>
-                        <tr>
-                            <th>Sabado</th>
-                        </tr>
-                        <tr>
-                            <th>Domingo</th>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </div>
+        <main  className='pb-20 w-full'>
+            <header>
+                <h1 className="title">Calendario de Comidas</h1>
+                <nav className="flex justify-between items-center w-full max-w-3xl px-4 pb-2">
+                    <FaArrowLeft className="text-2xl cursor-pointer" />
+                    <div>
+                        <p className="text-2xl font-semibold px-4">Junio 2025</p>
+                        <p className="text-sm text-center">Semana 23/06 - 29/06</p>
+                    </div>
+                    <FaArrowRight className="text-2xl cursor-pointer" />
+                </nav>
+            </header>
+            <CalendarMonthTable />
+            <div className="flex justify-center py-4 bg-base-300"><button className='btn btn-wide btn-circle btn-secondary'>Generar automáticamente</button></div>
         </main>
     )
 }
-
-//abajo del dia deberia ir el contenido con etiqueta td

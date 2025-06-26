@@ -1,5 +1,6 @@
 "use client";
 
+import calculateCaloriesWithFAO from "@/lib/calculateCaloriesWithFAO";
 import { useState } from "react";
 
 const Profile = ({ userData }) => {
@@ -95,6 +96,18 @@ const Profile = ({ userData }) => {
             <button type="submit" className="btn btn-primary" disabled={loading}>
                 {loading ? "Guardando..." : "Guardar"}
             </button>
+
+            <p>
+                Calorías estimadas por día: {calculateCaloriesWithFAO(
+                    formData.weight || userData.weight,
+                    formData.height || userData.height,
+                    formData.age > 10 ? formData.age : userData.age,
+                    userData.gender,
+                    // Calculate activity level multiplier based on physical activity
+                    formData.physical_activity === "Baja" ? 1.53 : 
+                    formData.physical_activity === "Moderada" ? 1.76 : 2.25
+                ).toFixed(0)} kcal
+            </p>
 
             {error && <p className="text-error">{error}</p>}
             {saved && <p className="text-success">Datos guardados correctamente.</p>}

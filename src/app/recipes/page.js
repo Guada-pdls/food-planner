@@ -10,12 +10,12 @@ const page = () => {
   return (
     <>
       <header>
-        <h1 className='text-2xl font-bold'>Recipes</h1>
+        <h1 className='title'>Recipes</h1>
         <div className='flex justify-end'>
           <RecipeSearcher onSearch={setSearchQuery} />
         </div>
       </header>
-      <main className='flex justify-center flex-wrap items-center p-4'>
+      <main className='pb-20 flex justify-center flex-wrap items-center p-4'>
         <Recipes searchQuery={searchQuery} />
       </main>
     </>

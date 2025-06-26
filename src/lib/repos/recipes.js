@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 
-const VALID_MEAL_TYPES = ['desayuno', 'almuerzo', 'merienda', 'cena']
+const VALID_MEAL_TYPES = ['Desayuno', 'Almuerzo', 'Merienda', 'Cena']
 
 export async function getAllRecipesLite() {
     return prisma.recipe.findMany({
@@ -88,38 +88,38 @@ export async function getFilteredRecipes({
 }
 
 export async function getRecipeById(id) {
-    return prisma.recipe.findUnique({
-        where: { recipe_id: id },
-        include: {
-            procedure: true,
-            cooking_time: true,
-            serving_count: true,
-            ingredients: {
-                select: {
-                    ingredient: {
-                        select: {
-                            ingredient_id: true,
-                            name: true,
-                            storage: true,
-                        }
-                    }
-                }
-            },
-            types: {
-                select: { type: true }
-            },
-            nutrition_info: {
-                select: {
-                    calories: true,
-                    protein: true,
-                    carbs: true,
-                    fats: true,
-                    fiber: true,
-                    quantity: true,
-                }
+  return prisma.recipe.findUnique({
+    where: { recipe_id: id },
+    include: {
+      ingredients: {
+        select: {
+          ingredient: {
+            select: {
+              ingredient_id: true,
+              name: true,
             }
+          }
         }
-    })
+      },
+      types: {
+        select: { type: true }
+      },
+      nutrition_info: {
+        select: {
+          info: {
+            select: {
+              calories: true,
+              protein: true,
+              carbs: true,
+              fats: true,
+              fiber: true,
+              quantity: true
+            }
+          }
+        }
+      }
+    }
+  });
 }
 
 export async function addRecipe({
@@ -127,7 +127,7 @@ export async function addRecipe({
     procedure,
     cooking_time,
     serving_count,
-    ingredients, // array de { name, freezer, fridge, recommendations? }
+    ingredients, // array de { name, freezer, fridge, recommendations?, category }
     types,       // array de strings (deben ser valores válidos del enum)
     nutrition,   // { protein, carbs, fats, calories, fiber, quantity }
 }) {
@@ -149,6 +149,7 @@ export async function addRecipe({
                                 freezer: ing.freezer,
                                 fridge: ing.fridge,
                                 recommendations: ing.recommendations || null,
+                                category: ing.category || null,
                             },
                         },
                     },

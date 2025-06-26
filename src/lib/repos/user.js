@@ -14,7 +14,6 @@ const getUserData = async (email) => {
                 gender: true
             },
         });
-
         return user;
     } catch (error) {
         console.error("Error fetching user data:", error); // TODO: Handle error appropriately

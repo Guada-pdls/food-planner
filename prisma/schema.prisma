@@ -117,10 +117,10 @@ model MealRecipe {
 }
 
 enum MealType {
-  desayuno
-  almuerzo
-  merienda
-  cena
+  Desayuno
+  Almuerzo
+  Merienda
+  Cena
 }
 
 model Ingredient {
@@ -130,11 +130,24 @@ model Ingredient {
   fridge          Int
   recommendations String?
   image           String?
+  category        IngredientCategory?
 
   nutrition_info NutritionInfo? @relation("IngredientNutrition", fields: [nutrition_id], references: [nutrition_id])
   nutrition_id   Int?           @unique
 
   recipes RecipeIngredient[]
+}
+
+enum IngredientCategory {
+  Frutas
+  Verduras
+  Carnes
+  Legumbres
+  Pescados
+  Cereales
+  Granos
+  Lácteos
+  Huevos
 }
 
 model RecipeIngredient {

@@ -7,3 +7,18 @@ export async function getAllIngredients() {
     },
   })
 }
+
+export async function getIngredientById(id) {
+  return await prisma.ingredient.findUnique({
+    where: { ingredient_id: id },
+  })
+}
+
+export async function getIngredientsByCategory(category) {
+  return await prisma.ingredient.findMany({
+    where: { category },
+    orderBy: {
+      name: 'asc',
+    },
+  })
+} 

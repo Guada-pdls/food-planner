@@ -1,7 +1,9 @@
 "use client";
 
-import calculateCaloriesWithFAO from "@/lib/calculateCaloriesWithFAO";
+import calculateCaloriesWithFAO from "@/lib/calculations/calculateCaloriesWithFAO";
+import calculateMacros from "@/lib/calculations/calculateMacros";
 import { useState } from "react";
+import NutritionInfo from "../NutitionInfo/NutritionInfo";
 
 const Profile = ({ userData }) => {
     const [formData, setFormData] = useState(userData);
@@ -97,20 +99,27 @@ const Profile = ({ userData }) => {
                 {loading ? "Guardando..." : "Guardar"}
             </button>
 
-            <p>
-                Calorías estimadas por día: {calculateCaloriesWithFAO(
-                    formData.weight || userData.weight,
-                    formData.height || userData.height,
-                    formData.age > 10 ? formData.age : userData.age,
+            <h2 className="subtitle">Nutrición recomendada:</h2>
+            <NutritionInfo {...
+                calculateMacros(
+                    calculateCaloriesWithFAO(
+                        formData.weight || userData.weight,
+                        formData.height || userData.height,
+                        formData.age > 10 ? formData.age : userData.age,
+                        userData.gender,
+                        // Calculate activity level multiplier based on physical activity
+                        formData.physical_activity === "Mínima" ? 1.2 :
+                            formData.physical_activity === "Baja" ? 1.53 :
+                                formData.physical_activity === "Moderada" ? 1.76 : 2.25
+                    ).toFixed(0),
                     userData.gender,
-                    // Calculate activity level multiplier based on physical activity
-                    formData.physical_activity === "Baja" ? 1.53 : 
-                    formData.physical_activity === "Moderada" ? 1.76 : 2.25
-                ).toFixed(0)} kcal
-            </p>
+                    formData.weight || userData.weight,
+                    formData.physical_activity || userData.physical_activity
+                )
+            } />
 
-            {error && <p className="text-error">{error}</p>}
-            {saved && <p className="text-success">Datos guardados correctamente.</p>}
+            {error && <p className="ps-4 text-error">{error}</p>}
+            {saved && <p className="ps-4 text-success">Datos guardados correctamente.</p>}
         </form>
     );
 };

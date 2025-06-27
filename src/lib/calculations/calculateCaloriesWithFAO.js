@@ -46,5 +46,7 @@ export default function calculateCaloriesWithFAO(
     throw new Error(`Género no reconocido: "${gender}". Use "Masculino" o "Femenino".`)
   }
 
+  console.log(tmb, activityLevel)
+
   return tmb * activityLevel
 }

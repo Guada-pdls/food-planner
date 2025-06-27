@@ -131,6 +131,7 @@ model Ingredient {
   recommendations String?
   image           String?
   category        IngredientCategory?
+  barcode         String? @unique
 
   nutrition_info NutritionInfo? @relation("IngredientNutrition", fields: [nutrition_id], references: [nutrition_id])
   nutrition_id   Int?           @unique

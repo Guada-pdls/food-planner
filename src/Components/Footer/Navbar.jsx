@@ -15,6 +15,7 @@ const Navbar = () => {
     if (pathname.includes('calendar')) return 'calendar';
     if (pathname.includes('recipes')) return 'recipes';
     if (pathname.includes('ingredients')) return 'ingredients';
+    if (pathname === '/barcode-scanner') return 'ingredients';
     return null;
   }, [pathname]);
 

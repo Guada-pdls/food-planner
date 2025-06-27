@@ -30,25 +30,28 @@ export default function BarcodeScanner({ onResult }) {
         })
 
         videoRef.current.srcObject = stream
-        await videoRef.current.play()
+
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current.play()
+        }
 
         let lastScan = 0
 
-codeReader.decodeFromStream(stream, videoRef.current, (result, err) => {
-  const now = Date.now()
-  if (!isMounted) return
+        codeReader.decodeFromStream(stream, videoRef.current, (result, err) => {
+          const now = Date.now()
+          if (!isMounted) return
 
-  if (result && now - lastScan > 3000) {
-    lastScan = now
-    const code = result.getText()
-    console.log('✅ Código leído:', code)
-    onResult(code)
-  }
+          if (result && now - lastScan > 3000) {
+            lastScan = now
+            const code = result.getText()
+            console.log('✅ Código leído:', code)
+            onResult(code)
+          }
 
-  if (err && err.name !== 'NotFoundException') {
-    console.error('❌ Escaneo falló:', err)
-  }
-})
+          if (err && err.name !== 'NotFoundException') {
+            console.error('❌ Escaneo falló:', err)
+          }
+        })
 
       } catch (e) {
         console.error('🚨 Error iniciando escáner:', e)

@@ -5,13 +5,13 @@ import { prisma } from "@/lib/prisma"
 import { getUserData } from "@/lib/repos/user";
 
 function isComplete(user) {
-  return Boolean(
-    user?.age &&
-    user?.height &&
-    user?.weight &&
-    user?.physical_activity &&
-    user?.gender
-  );
+    return Boolean(
+        user?.age &&
+        user?.height &&
+        user?.weight &&
+        user?.physical_activity &&
+        user?.gender
+    );
 }
 
 export const authOptions = {
@@ -42,6 +42,12 @@ export const authOptions = {
                 session.user.id = token.sub
                 session.user.data_completed = token.data_completed || false
                 session.user.dislike_ingredients = token.dislike_ingredients || []
+                session.user.weight = token.weight;
+                session.user.height = token.height;
+                session.user.age = token.age;
+                session.user.gender = token.gender;
+                session.user.physical_activity = token.physical_activity;
+                session.user.email = token.email;
             }
             return session
         },
@@ -59,16 +65,23 @@ export const authOptions = {
                         dislike_ingredients: true,
                     }
                 })
-
+                token.age = dbUser?.age;
+                token.height = dbUser?.height;
+                token.weight = dbUser?.weight;
+                token.gender = dbUser?.gender;
+                token.physical_activity = dbUser?.physical_activity;
                 token.data_completed = isComplete(dbUser)
                 token.dislike_ingredients = dbUser?.dislike_ingredients ? JSON.parse(dbUser.dislike_ingredients) : []
-                console.log("Token JWT creado:", token)
             }
             if (trigger === "update") {
                 const dbUser = await getUserData(token.email)
-                console.log("da false?", dbUser)
                 token.data_completed = isComplete(dbUser)
                 token.dislike_ingredients = dbUser?.dislike_ingredients ? JSON.parse(dbUser.dislike_ingredients) : []
+                token.age = dbUser?.age
+                token.height = dbUser?.height
+                token.weight = dbUser?.weight
+                token.gender = dbUser?.gender
+                token.physical_activity = dbUser?.physical_activity
             }
             return token
         },

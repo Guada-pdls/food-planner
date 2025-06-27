@@ -22,3 +22,12 @@ export async function getIngredientsByCategory(category) {
     },
   })
 } 
+
+export async function getIngredientByBarcode(barcode) {
+  return await prisma.ingredient.findUnique({
+    where: { barcode },
+    include: {
+      nutrition_info: true,
+    },
+  })
+}

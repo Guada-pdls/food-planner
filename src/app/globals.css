@@ -64,6 +64,9 @@
     @apply text-3xl font-bold px-4 py-6;
   }
   .subtitle {
-    @apply text-2xl font-semibold px-4 py-4;
+    @apply text-2xl font-semibold px-4 py-2;
+  }
+  .subtitle2 {
+    @apply text-xl font-semibold px-4 py-2;
   }
 }

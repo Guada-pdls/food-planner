@@ -5,6 +5,9 @@ export async function getAllIngredients() {
     orderBy: {
       name: 'asc',
     },
+    select: {
+      image: true,
+    }
   })
 }
 

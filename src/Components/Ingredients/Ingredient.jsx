@@ -3,9 +3,9 @@ import React from 'react'
 
 const Ingredient = ({ ingredient_id, name, image }) => {
     return (
-        <li className='card min-w-80 h-40 bg-base-300 shadow-xl border-2 border-base-200'>
-            <figure>
-                <img className='object-cover h-24 w-80 shadow' src={image} alt={name} />
+        <li className='card min-w-80 bg-base-300 shadow-xl border-2 border-base-200'>
+            <figure className='h-60 w-80'>
+                <img className='object-cover h-60 w-80 shadow' src={image} alt={name} />
             </figure>
             <div className='card-body'>
                 <h2 className='card-title'>{name}</h2>

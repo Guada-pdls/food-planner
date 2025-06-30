@@ -3,7 +3,7 @@ import React from 'react'
 
 const Recipe = ({ id, name, description, image }) => {
   return (
-    <article className='card w-80 h-96 bg-base-300 shadow-xl border-2 border-base-200'>
+    <article className='card w-80 h-96 bg-base-300 shadow-xl border-2 border-base-200 mb-4'>
       <figure>
         <img className='object-cover h-56 w-96 shadow' src={image} alt={name} />
       </figure>

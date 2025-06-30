@@ -10,7 +10,7 @@ const IngredientsSection = async ({ category }) => {
             {ingredients.length > 0 ? (
                 <ul className="list-disc pl-4 flex gap-4 overflow-x-scroll">
                     {ingredients.map((ingredient, index) => (
-                        <Ingredient key={index} ingredient={ingredient} />
+                        <Ingredient key={index} {...ingredient} />
                     ))}
                 </ul>
             ) : (

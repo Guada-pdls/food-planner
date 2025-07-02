@@ -1,34 +1,36 @@
+'use client'
 import Recipe from '@/Components/Recipes/Recipe'
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 
-const Recipes = ({ searchQuery }) => {
+const Recipes = () => {
   const [recipes, setRecipes] = useState([])
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     const url = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/recipes`)
-    console.log(url.toString())
-    if (searchQuery) url.searchParams.append('name', searchQuery)
+    for (const [key, value] of searchParams.entries()) {
+      url.searchParams.append(key, value)
+    }
+
     fetch(url.toString(), {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       }
     })
-    .then(response => response.json())
-    .then(data => {
-      setRecipes(data)
-    })
-    .catch(error => {
-      console.error('Error fetching recipes: ', error)
-    })
-  }, [searchQuery])
+      .then(res => res.json())
+      .then(setRecipes)
+      .catch(error => {
+        console.error('Error fetching recipes: ', error)
+      })
+  }, [searchParams.toString()])
 
   return (
     recipes.length === 0 ? (
-      <p>No recipes available.</p>
+      <p>No hay recetas disponibles con tus preferencias.</p>
     ) : (
       recipes.map((recipe) => (
-        console.log(recipe),
         <Recipe key={recipe.recipe_id} {...recipe} />
       ))
     )

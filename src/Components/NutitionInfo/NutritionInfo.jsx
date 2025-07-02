@@ -3,11 +3,11 @@ const NutritionInfo = ({ calories, carbohydrates, fat, protein, fiber }) => {
         <table className="table">
             <thead>
                 <tr>
-                    <th>Carbohidratos</th>
-                    <th>Grasas</th>
-                    <th>Proteínas</th>
-                    <th>Fibra</th>
-                    <th>Calorías</th>
+                    <th>Carbohidratos (g)</th>
+                    <th>Grasas (g)</th>
+                    <th>Proteínas (g)</th>
+                    <th>Fibra (g)</th>
+                    <th>Calorías (g)</th>
                 </tr>
             </thead>
             <tbody>

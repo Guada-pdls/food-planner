@@ -5,14 +5,12 @@ import { getServerSession } from "next-auth"
 
 const NutritionInfoComparison = async ({ carbohydrates, fat, protein, fiber, calories }) => {
     let { user } = await getServerSession(authOptions);
-    console.log(user)    
     let recommendedCalories = calculateCaloriesWithFAO(user.weight, user.height, user.age, user.gender, 
         user.physical_activity == "Mínima" ? 1.2 :
         user.physical_activity == "Baja" ? 1.53 :
         user.physical_activity == "Moderada" ? 1.76 :
         2.25
     );
-    console.log(recommendedCalories);
     let recommendedMacros = calculateMacros(recommendedCalories, user.gender, user.weight, user.physical_activity);
 
     return (
@@ -20,16 +18,16 @@ const NutritionInfoComparison = async ({ carbohydrates, fat, protein, fiber, cal
         <thead>
             <tr>
                 <th></th>
-                <th>Carbohidratos</th>
-                <th>Grasas</th>
-                <th>Proteínas</th>
-                <th>Fibra</th>
-                <th>Calorías</th>
+                <th>Carbohidratos (g)</th>
+                <th>Grasas (g)</th>
+                <th>Proteínas (g)</th>
+                <th>Fibra (g)</th>
+                <th>Calorías (g)</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>Total</td>
+                <td>Total consumido</td>
                 <td>{carbohydrates.toFixed(2)}</td>
                 <td>{fat.toFixed(2)}</td>
                 <td>{protein.toFixed(2)}</td>

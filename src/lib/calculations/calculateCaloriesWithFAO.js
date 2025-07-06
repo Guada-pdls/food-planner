@@ -5,7 +5,7 @@
  * @param height Altura en centímetros
  * @param age Edad en años
  * @param gender "Masculino" | "Femenino"
- * @param activityLevel Nivel de actividad física (multiplicador)
+ * @param physical_activity "Mínima" | "Baja" | "Moderada" | "Alta"
  * @returns Calorías estimadas por día (TDEE)
  */
 export default function calculateCaloriesWithFAO(
@@ -13,11 +13,15 @@ export default function calculateCaloriesWithFAO(
   height,
   age,
   gender,
-  activityLevel
+  physical_activity
 ) {
-  if (weight <= 0 || height <= 0 || age <= 0 || activityLevel <= 0) {
+  if (weight <= 0 || height <= 0 || age <= 0) {
     throw new Error('Parámetros inválidos: todos los valores deben ser mayores que cero.')
   }
+
+  const activityLevel = physical_activity == 'Mínima' ? 1.2 : 
+  physical_activity == 'Baja' ? 1.53 :
+  physical_activity == 'Moderada' ? 1.76 : 2.25;
 
   const heightInMeters = height / 100
   let tmb
@@ -45,8 +49,6 @@ export default function calculateCaloriesWithFAO(
   } else {
     throw new Error(`Género no reconocido: "${gender}". Use "Masculino" o "Femenino".`)
   }
-
-  console.log(tmb, activityLevel)
 
   return tmb * activityLevel
 }

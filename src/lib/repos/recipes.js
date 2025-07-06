@@ -37,18 +37,29 @@ export async function getSuggestedRecipes(userId) {
         select: {
             recipe_id: true,
             name: true,
-            image: true
+            image: true,
+            types: true,
+            cooking_time: true,
+            ingredients: {
+                include: {
+                    ingredient: {
+                        include: {
+                            nutrition_info: true
+                        }
+                    }
+                }
+            }
         },
     }
 
     return prisma.recipe.findMany(filter)
 }
 
-
 export async function getFilteredRecipes({
     page = 1,
     limit = 10,
     name,
+    time,
     type,
     ingredient,
 }) {
@@ -80,6 +91,7 @@ export async function getFilteredRecipes({
                         },
                     }
                     : {},
+                time ? { cooking_time: { lte: time } } : {}
             ],
         }
         ,
@@ -151,7 +163,7 @@ export async function addRecipe({
     types,
     nutrition,
     image = null,
-    freeze,
+    freezer,
     fridge,
 }) {
     const validTypes = types.filter((t) => VALID_MEAL_TYPES.includes(t))
@@ -164,7 +176,7 @@ export async function addRecipe({
             serving_count,
             image,
             fridge,
-            freezer: freeze,
+            freezer,
             nutrition_info: {
                 create: {
                     info: {

@@ -14,11 +14,12 @@ const CalendarWeekTable = ({ days }) => {
             </thead>
             <tbody>
                 {days.map((day, index) => {
-                    const { name, meals } = day;
+                    const { name, meals, iso } = day;
                     return (
                         <WeekDay
                             key={index}
                             day={name}
+                            date={iso}
                             meals={meals}
                         />
                     );

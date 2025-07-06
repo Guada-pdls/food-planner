@@ -116,7 +116,7 @@ model Recipe {
   name          String?
   fridge        Int?
   freezer       Int?
-  image         String?
+  image         String? @db.VarChar(255)
 
   meals          MealRecipe[]
   ingredients    RecipeIngredient[]
@@ -147,7 +147,7 @@ model Ingredient {
   freezer         Int
   fridge          Int
   recommendations String?
-  image           String?
+  image           String? @db.VarChar(255)
   category        IngredientCategory?
   barcode         String? @unique
 
@@ -169,6 +169,7 @@ enum IngredientCategory {
   Granos
   Lácteos
   Huevos
+  Otros
 }
 
 model RecipeIngredient {

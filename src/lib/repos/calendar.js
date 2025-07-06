@@ -13,30 +13,6 @@ export async function getAllMealsById(id) {
     });
 }
 
-export async function getMealsByDate(date) {
-    const start = new Date(date)
-    start.setHours(0, 0, 0, 0)
-
-    const end = new Date(date)
-    end.setHours(23, 59, 59, 999)
-
-    return await prisma.meal.findMany({
-        where: {
-            date: {
-                gte: start,
-                lte: end,
-            },
-        },
-        include: {
-            ingredients: {
-                include: {
-                    ingredient: true,
-                },
-            },
-        },
-    })
-}
-
 export async function getMealsByWeek(startDate, endDate) {
     const start = new Date(startDate)
     start.setHours(0, 0, 0, 0)

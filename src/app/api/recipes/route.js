@@ -13,11 +13,12 @@ export async function GET(request) {
       name: searchParams.get('name') || undefined,
       type: searchParams.get('type') || undefined,
       ingredient: searchParams.get('ingredient') || undefined,
+      time: searchParams.get('time') ? parseInt(searchParams.get('time')) : undefined,
       page: parseInt(searchParams.get('page') || '1', 10),
       limit: parseInt(searchParams.get('limit') || '10', 10),
     }
 
-    const hasFilters = filters.name || filters.type || filters.ingredient
+    const hasFilters = filters.name || filters.type || filters.ingredient || filters.time
 
     const recipes = hasFilters
       ? await getFilteredRecipes(filters)
@@ -37,39 +38,32 @@ export async function POST(req) {
   try {
     const body = await req.json()
 
-    const {
-      name,
-      procedure,
-      cooking_time,
-      serving_count,
-      ingredients,
-      types,
-      nutrition,
-      freeze,
-      fridge,
-      image, 
-    } = body
-
-    if (!name || !ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
-      return NextResponse.json({ error: 'Faltan datos requeridos' }, { status: 400 })
+    if (!Array.isArray(body) || body.length === 0) {
+      return NextResponse.json({ error: 'Se esperaba un array de recetas' }, { status: 400 })
     }
 
-    const recipe = await addRecipe({
-      name,
-      procedure,
-      cooking_time,
-      serving_count,
-      ingredients,
-      types,
-      nutrition,
-      freeze,
-      fridge,
-      image,
-    })
+    // Validación estricta de todas las recetas
+    const invalid = body.find((recipe) =>
+      !recipe.name || !Array.isArray(recipe.ingredients) || recipe.ingredients.length === 0
+    )
 
-    return NextResponse.json(recipe, { status: 201 })
+    if (invalid) {
+      return NextResponse.json(
+        { error: `Receta inválida: "${invalid.name || 'sin nombre'}"` },
+        { status: 400 }
+      )
+    }
+
+    const createdRecipes = await Promise.all(
+      body.map((recipeData) => addRecipe(recipeData))
+    )
+
+    return NextResponse.json(
+      { created: createdRecipes.length, recipes: createdRecipes },
+      { status: 201 }
+    )
   } catch (error) {
-    console.error("Error creating recipe:", error)
-    return NextResponse.json({ error: 'Error al crear receta' }, { status: 500 })
+    console.error('Error procesando recetas en lote:', error)
+    return NextResponse.json({ error: 'Error interno al crear recetas' }, { status: 500 })
   }
 }

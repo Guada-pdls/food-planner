@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-const Recipe = ({ id, name, description, image }) => {
+const Recipe = ({ id, name, image, types, cooking_time }) => {
   return (
     <article className='card w-80 h-96 bg-base-300 shadow-xl border-2 border-base-200 mb-4'>
       <figure>
@@ -8,8 +8,13 @@ const Recipe = ({ id, name, description, image }) => {
       </figure>
       <div className='card-body'>
         <h2 className='card-title'>{name}</h2>
-        <p>{description}</p>
-        <footer className='card-actions justify-end'>
+        <p>Tiempo de preparación: {cooking_time} minutos</p>
+        <footer className='card-actions justify-between items-center'>
+          <div>
+            {types.map((type, index) => {
+              return <div key={index} className="badge badge-outline badge-secondary">{type.type}</div>
+            })}
+          </div>
           <Link href={`/recipes/${id}`} className='btn btn-primary'>Ver más</Link>
         </footer>
       </div>

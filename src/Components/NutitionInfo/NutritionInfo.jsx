@@ -7,7 +7,7 @@ const NutritionInfo = ({ calories, carbohydrates, fat, protein, fiber }) => {
                     <th>Grasas (g)</th>
                     <th>Proteínas (g)</th>
                     <th>Fibra (g)</th>
-                    <th>Calorías (g)</th>
+                    <th>Valor energético (kcal)</th>
                 </tr>
             </thead>
             <tbody>

@@ -2,19 +2,30 @@
 import { useEffect, useState } from 'react'
 import { CiSearch } from 'react-icons/ci'
 import Loader from '../Loader/Loader'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-const RecipeSearcher = ({ onSearch }) => {
+const RecipeSearcher = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [opened, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const router = useRouter()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      onSearch(searchQuery)
+      const params = new URLSearchParams(searchParams.toString())
+      if (searchQuery) {
+        params.set('name', searchQuery)
+      } else {
+        params.delete('name')
+      }
+
+      router.replace(`?${params.toString()}`)
       setLoading(false)
-  }, 400)
+    }, 400)
+
     return () => clearTimeout(delayDebounce)
-  }, [searchQuery, onSearch])
+  }, [searchQuery])
 
   const handleChange = (e) => {
     const value = e.target.value

@@ -1,62 +1,105 @@
 'use client';
 import CalendarWeekTable from "@/Components/Calendar/CalendarWeekTable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { generateMealDays } from "@/lib/planning/generateMealDays";
+import calculateMacros from "@/lib/calculations/calculateMacros";
+import calculateCaloriesWithFAO from "@/lib/calculations/calculateCaloriesWithFAO";
+import { formatDate, formatDateDDMM, toISODate } from "@/utils/date";
+
+const getWeekRange = (refDate) => {
+  const startDate = new Date(refDate)
+  const day = refDate.getDay()
+  const diff = (day === 0 ? -6 : 1) - day // lunes como primer día
+
+  startDate.setDate(refDate.getDate() + diff)
+  const endDate = new Date(startDate)
+  endDate.setDate(startDate.getDate() + 6)
+
+  return {
+    start: toISODate(startDate),
+    end: toISODate(endDate)
+  }
+}
 
 export default function Page() {
-    // Día actual
-    const today = new Date();
-    // Fecha de inicio de la semana (lunes)
-    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay() + 1));
-    // Fecha de fin de la semana (domingo)
-    const endOfWeek = new Date(today.setDate(today.getDate() - today.getDay() + 7));
+  const { data: session } = useSession();
+  const [loading, setLoading] = useState(false);
+  const [week, setWeek] = useState([]);
+  const [weekRange, setWeekRange] = useState(() => getWeekRange(new Date()));
 
-    // Generar días de la semana
-    const generateWeekDays = () => {
-        const days = [];
-        for (let i = 0; i < 7; i++) {
-            const date = new Date(startOfWeek);
-            date.setDate(startOfWeek.getDate() + i);
-            days.push({
-                // Formato de fecha DD/MM/YYYY
-                date: date.toLocaleDateString('es-ES'), // Formato DD/MM/YYYY
-                name: date.toLocaleDateString('es-ES', { weekday: 'long' }), // Nombre del día en español
-                meals: [] // Inicialmente sin comidas
-            });
-        }
-        return days;
-    };
+  const fetchMeals = async (start) => {
+    setLoading(true);
+    const macros = calculateMacros(
+      calculateCaloriesWithFAO(
+        session.user.weight,
+        session.user.height,
+        session.user.age,
+        session.user.gender,
+        session.user.physical_activity
+      )
+    );
 
-    const [days, setDays] = useState(generateWeekDays());
-    const [loading, setLoading] = useState(false);
-
-    const generateMeals = () => {
-        
+    try {
+      const res = await fetch("/api/meals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          startOfWeek: start,
+          userId: session.user.id,
+          macros,
+          numDays: 7,
+        }),
+      });
+      const data = await res.json();
+      setWeek(data.meals);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const hanldeClick = () => {
-        setLoading(true);
-        setTimeout(() => {
-            setDays(generateMeals());
-            setLoading(false);
-        }, 500);
-    }
+  useEffect(() => {
+    setWeek(generateMealDays(weekRange.start, 7));
+  }, [weekRange]);
 
-    return (
-        <main className='pb-20 w-full'>
-            <header>
-                <h1 className="title">Calendario de Comidas</h1>
-                <nav className="flex justify-between items-center w-full max-w-3xl px-4 pb-2">
-                    <FaArrowLeft className="text-2xl cursor-pointer" />
-                    <div>
-                        <p className="text-2xl font-semibold px-4">Junio 2025</p>
-                        <p className="text-sm text-center">Semana 23/06 - 29/06</p>
-                    </div>
-                    <FaArrowRight className="text-2xl cursor-pointer" />
-                </nav>
-            </header>
-            <CalendarWeekTable days={days} />
-            <div className="flex justify-center py-4 bg-base-300"><button className='btn btn-wide btn-circle btn-secondary' onClick={hanldeClick}>{loading ? 'Generando...' : 'Generar automáticamente'}</button></div>
-        </main>
-    )
+  const changeWeek = (deltaDays) => {
+    const newDate = new Date(weekRange.start);
+    newDate.setDate(newDate.getDate() + deltaDays);
+    setWeekRange(getWeekRange(newDate));
+  };
+
+  const startDate = new Date(weekRange.start);
+  const endDate = new Date(weekRange.end);
+
+  return (
+    <main className="pb-20 w-full">
+      <header>
+        <h1 className="title">Calendario de Comidas</h1>
+        <nav className="flex justify-between items-center w-full max-w-3xl px-4 pb-2">
+          <FaArrowLeft className="text-2xl cursor-pointer" onClick={() => changeWeek(-7)} />
+          <div>
+            <p className="text-2xl font-semibold px-4">
+              {startDate.toLocaleDateString("es-UY", { month: "long" })} {startDate.getFullYear()}
+            </p>
+            <p className="text-sm text-center">
+              Semana {formatDate(weekRange.start)} - {formatDate(weekRange.end)}
+            </p>
+          </div>
+          <FaArrowRight className="text-2xl cursor-pointer" onClick={() => changeWeek(7)} />
+        </nav>
+      </header>
+
+      <CalendarWeekTable days={week} />
+
+      <div className="flex justify-center py-4 bg-base-300">
+        <button
+          className="btn btn-wide btn-circle btn-secondary"
+          onClick={() => fetchMeals(weekRange.start)}
+        >
+          {loading ? "Generando..." : "Generar automáticamente"}
+        </button>
+      </div>
+    </main>
+  );
 }

@@ -35,7 +35,8 @@ export async function POST(req) {
     return NextResponse.json(recipe, { status: 201 })
 
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: 'Error al crear receta' }, { status: 500 })
+      console.error(error)
+      console.log(req)
+      return NextResponse.json({ error: 'Error al crear receta' }, { status: 500 })
   }
 }

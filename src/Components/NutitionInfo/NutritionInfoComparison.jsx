@@ -79,7 +79,6 @@ const NutritionInfoComparison = ({ carbohydrates, fat, protein, fiber, calories,
                             const inRange =
                                 (value >= min) &&
                                 (value <= max)
-                            console.log(inRange)
     
                             return (
                                 <td key={key} className={inRange ? 'text-success' : 'text-error'}>

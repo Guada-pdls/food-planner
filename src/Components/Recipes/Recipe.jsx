@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-const Recipe = ({ id, name, image, types, cooking_time }) => {
+const Recipe = ({ recipe_id, name, image, types, cooking_time }) => {
   return (
     <article className='card w-80 h-96 bg-base-300 shadow-xl border-2 border-base-200 mb-4'>
       <figure>
@@ -15,7 +15,7 @@ const Recipe = ({ id, name, image, types, cooking_time }) => {
               return <div key={index} className="badge badge-outline badge-secondary me-1">{type.type}</div>
             })}
           </div>
-          <Link href={`/recipes/${id}`} className='btn btn-primary'>Ver más</Link>
+          <Link href={`/recipes/${recipe_id}`} className='btn btn-primary'>Ver más</Link>
         </footer>
       </div>
     </article>

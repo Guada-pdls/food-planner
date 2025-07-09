@@ -69,4 +69,7 @@
   .subtitle2 {
     @apply text-xl font-semibold px-4 py-2;
   }
+  .subtitle3 {
+    @apply text-lg font-semibold px-4 py-2;
+  }
 }

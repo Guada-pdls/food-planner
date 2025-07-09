@@ -1,26 +1,47 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CiSearch } from 'react-icons/ci'
+import Loader from '../Loader/Loader'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-const RecipeSearcher = ({ onSearch }) => {
+const RecipeSearcher = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [opened, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString())
+      if (searchQuery) {
+        params.set('name', searchQuery)
+      } else {
+        params.delete('name')
+      }
+
+      router.replace(`?${params.toString()}`)
+      setLoading(false)
+    }, 400)
+
+    return () => clearTimeout(delayDebounce)
+  }, [searchQuery])
 
   const handleChange = (e) => {
     const value = e.target.value
+    setLoading(true)
     setSearchQuery(value)
-    onSearch(value)
   }
 
   return (
-    <div className='relative'>
+    <div className='relative flex flex-row items-center gap-2'>
+      {loading && <Loader />}
       {!opened && (
         <CiSearch
           className='cursor-pointer text-2xl'
           onClick={() => setOpen(true)}
         />
       )}
-
       {opened && (
         <input
           autoFocus

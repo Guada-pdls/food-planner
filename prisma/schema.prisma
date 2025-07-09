@@ -61,13 +61,14 @@ model User {
   weight              Float?
   physical_activity   String?
   gender              String?
-  dislike_ingredients String? // Comma-separated list of ingredient ids
+  dislike_ingredients String?
 
   meals UserMeal[]
 
   // Relations
   accounts Account[]
   sessions Session[]
+  grocery_list GroceryList[]
 }
 
 model Meal {
@@ -90,6 +91,23 @@ model UserMeal {
   @@id([id, meal_id])
 }
 
+model GroceryList {
+  id        Int       @id @default(autoincrement())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  items     GroceryItem[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model GroceryItem {
+  id             Int        @id @default(autoincrement())
+  groceryList    GroceryList @relation(fields: [groceryListId], references: [id], onDelete: Cascade)
+  groceryListId  Int
+  ingredient     Ingredient  @relation(fields: [ingredient_id], references: [ingredient_id])
+  ingredient_id  Int
+}
+
 model Recipe {
   recipe_id     Int     @id @default(autoincrement())
   procedure     String? @db.Text
@@ -98,7 +116,7 @@ model Recipe {
   name          String?
   fridge        Int?
   freezer       Int?
-  image         String?
+  image         String? @db.VarChar(255)
 
   meals          MealRecipe[]
   ingredients    RecipeIngredient[]
@@ -129,7 +147,7 @@ model Ingredient {
   freezer         Int
   fridge          Int
   recommendations String?
-  image           String?
+  image           String? @db.VarChar(255)
   category        IngredientCategory?
   barcode         String? @unique
 
@@ -137,6 +155,8 @@ model Ingredient {
   nutrition_id   Int?           @unique
 
   recipes RecipeIngredient[]
+
+  GroceryItem GroceryItem[]
 }
 
 enum IngredientCategory {
@@ -149,6 +169,7 @@ enum IngredientCategory {
   Granos
   Lácteos
   Huevos
+  Otros
 }
 
 model RecipeIngredient {

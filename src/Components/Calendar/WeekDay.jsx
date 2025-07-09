@@ -3,7 +3,6 @@ import Link from "next/link"
 const mealTypes = ['Desayuno', 'Almuerzo', 'Merienda', 'Cena'];
 
 const WeekDay = ({ day, date, meals }) => {
-    console.log(date, meals)
     // Agrupar comidas por tipo
     const mealsByType = meals?.reduce((acc, meal) => {
         if (!acc[meal.type]) acc[meal.type] = [];

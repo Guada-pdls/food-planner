@@ -19,7 +19,6 @@ const DayDetail = ({ meals: initialMeals, user }) => {
     // 2. Usamos useMemo para que totals se recalcule cuando meals cambie
     const totals = useMemo(() => {
         return meals.reduce((acc, meal) => {
-            console.log(meal)
             const { portion } = meal.recipes[0];
             meal.recipes.forEach(r => {
                 const nutrition = r.recipe?.nutrition_info?.info;

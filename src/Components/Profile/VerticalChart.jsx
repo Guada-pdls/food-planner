@@ -1,7 +1,5 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
 import calculateCaloriesWithFAO from "@/lib/calculations/calculateCaloriesWithFAO";
 import calculateMacros from "@/lib/calculations/calculateMacros";
 import {
@@ -29,7 +27,7 @@ const chartOptions = (title) => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
-    legend: { display: false },
+    legend: { position: 'top' },
     title: {
       display: true,
       text: title,
@@ -42,79 +40,63 @@ const chartOptions = (title) => ({
   },
 });
 
-const VerticalBarChart = () => {
-  const { data: session, status } = useSession();
-  const [macroData, setMacroData] = useState([]);
+const VerticalBarChart = ({ consumedMacros, userData }) => {
+  const recommendedCalories = calculateCaloriesWithFAO(
+    userData.weight,
+    userData.height,
+    userData.age,
+    userData.gender,
+    userData.physical_activity
+  );
+  const recommendedMacros = calculateMacros(
+    recommendedCalories,
+    userData.gender,
+    userData.weight,
+    userData.physical_activity
+  );
 
-  useEffect(() => {
-    if (session?.user) {
-      const user = session.user;
-      const recommendedCalories = calculateCaloriesWithFAO(
-        user.weight, 
-        user.height, 
-        user.age, 
-        user.gender, 
-        user.physical_activity
-      );
-      const recommendedMacros = calculateMacros(
-        recommendedCalories, 
-        user.gender, 
-        user.weight, 
-        user.physical_activity
-      );
-      
-      console.log(recommendedMacros);
-      
-      // Actualizar los datos de macros con los valores calculados
-      const updatedMacroData = [
-        {
-          name: "Carbohidratos",
-          value: Math.round(recommendedMacros.carbohydrates.estimated),
-          color: "rgba(255, 99, 132, 0.6)",
-          border: "rgba(255, 99, 132, 1)",
-        },
-        {
-          name: "Grasas",
-          value: Math.round(recommendedMacros.fat.estimated),
-          color: "rgba(255, 206, 86, 0.6)",
-          border: "rgba(255, 206, 86, 1)",
-        },
-        {
-          name: "Proteínas",
-          value: Math.round(recommendedMacros.protein.estimated),
-          color: "rgba(54, 162, 235, 0.6)",
-          border: "rgba(54, 162, 235, 1)",
-        },
-        {
-          name: "Fibra",
-          value: Math.round(recommendedMacros.fiber.estimated), // Si no tienes fibra calculada, usa valor por defecto
-          color: "rgba(75, 192, 192, 0.6)",
-          border: "rgba(75, 192, 192, 1)",
-        },
-        {
-          name: "Calorías",
-          value: Math.round(recommendedCalories),
-          color: "rgba(153, 102, 255, 0.6)",
-          border: "rgba(153, 102, 255, 1)",
-          
-        },
-      ];
-      
-      setMacroData(updatedMacroData);
-    }
-  }, [session]);
-
-  if (status === "loading") {
-    return <div>Cargando...</div>;
-  }
-
-  if (status === "unauthenticated") {
-    return <div>Por favor, inicia sesión para ver tus datos nutricionales.</div>;
-  }
-
-  if (macroData.length === 0) {
-    return <div>Cargando datos nutricionales...</div>;
-  }
+  const macroData = [
+    {
+      name: "Carbohidratos",
+      value: Math.round(recommendedMacros.carbohydrates.estimated),
+      comparisonValue: Math.round(consumedMacros.carbohydrates),
+      color: "rgba(255, 99, 132, 0.4)",
+      compColor: "rgba(255, 99, 132, 1)",
+      border: "rgba(255, 99, 132, 1)",
+    },
+    {
+      name: "Grasas",
+      value: Math.round(recommendedMacros.fat.estimated),
+      comparisonValue: Math.round(consumedMacros.fat),
+      color: "rgba(255, 206, 86, 0.4)",
+      compColor: "rgba(255, 206, 86, 1)",
+      border: "rgba(255, 206, 86, 1)",
+    },
+    {
+      name: "Proteínas",
+      value: Math.round(recommendedMacros.protein.estimated),
+      comparisonValue: Math.round(consumedMacros.protein),
+      color: "rgba(54, 162, 235, 0.4)",
+      compColor: "rgba(54, 162, 235, 1)",
+      border: "rgba(54, 162, 235, 1)",
+    },
+    {
+      name: "Fibra",
+      value: Math.round(recommendedMacros.fiber.estimated),
+      comparisonValue: Math.round(consumedMacros.fiber),
+      color: "rgba(75, 192, 192, 0.4)",
+      compColor: "rgba(75, 192, 192, 1)",
+      border: "rgba(75, 192, 192, 1)",
+    },
+    {
+      name: "Calorías",
+      value: Math.round(recommendedCalories),
+      comparisonValue: Math.round(consumedMacros.calories),
+      color: "rgba(153, 102, 255, 0.4)",
+      compColor: "rgba(153, 102, 255, 1)",
+      border: "rgba(153, 102, 255, 1)",
+    },
+  ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -123,24 +105,19 @@ const VerticalBarChart = () => {
           labels: [macro.name],
           datasets: [
             {
-              label: macro.name,
-              data: [macro.value],
-              backgroundColor: macro.color,
+              label: "Consumido",
+              data: [macro.comparisonValue],
+              backgroundColor: macro.compColor,
               borderColor: macro.border,
               borderWidth: 1,
             },
             {
-              label: macro.name,
+              label: "Recomendado",
               data: [macro.value],
               backgroundColor: macro.color,
               borderColor: macro.border,
               borderWidth: 1,
             },
-          
-          
-          
-          
-          
           ],
         };
 

@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth"
 
 const page = async ({ params }) => {
     let { date } = await params
-    let session = await getServerSession() 
+    let session = await getServerSession()
     let user = await getUserData(session.user.email)
 
     let meals = await getMealsByDate(session.user.id, date)

@@ -66,8 +66,8 @@ model User {
   meals UserMeal[]
 
   // Relations
-  accounts Account[]
-  sessions Session[]
+  accounts     Account[]
+  sessions     Session[]
   grocery_list GroceryList[]
 }
 
@@ -91,20 +91,20 @@ model UserMeal {
 }
 
 model GroceryList {
-  id        Int       @id @default(autoincrement())
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        Int           @id @default(autoincrement())
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   items     GroceryItem[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 }
 
 model GroceryItem {
-  id             Int        @id @default(autoincrement())
-  groceryList    GroceryList @relation(fields: [groceryListId], references: [id], onDelete: Cascade)
-  groceryListId  Int
-  ingredient     Ingredient  @relation(fields: [ingredient_id], references: [ingredient_id])
-  ingredient_id  Int
+  id            Int         @id @default(autoincrement())
+  groceryList   GroceryList @relation(fields: [groceryListId], references: [id], onDelete: Cascade)
+  groceryListId Int
+  ingredient    Ingredient  @relation(fields: [ingredient_id], references: [ingredient_id])
+  ingredient_id Int
 }
 
 model Recipe {
@@ -142,14 +142,14 @@ enum MealType {
 }
 
 model Ingredient {
-  ingredient_id   Int     @id @default(autoincrement())
-  name            String  @unique
+  ingredient_id   Int                 @id @default(autoincrement())
+  name            String              @unique
   freezer         Int
   fridge          Int
   recommendations String?
-  image           String? @db.VarChar(255)
+  image           String?             @db.VarChar(255)
   category        IngredientCategory?
-  barcode         String? @unique
+  barcode         String?             @unique
 
   nutrition_info NutritionInfo? @relation("IngredientNutrition", fields: [nutrition_id], references: [nutrition_id])
   nutrition_id   Int?           @unique
@@ -176,6 +176,9 @@ model RecipeIngredient {
   recipe_id     Int
   ingredient_id Int
 
+  quantity Float
+  unit     String
+
   recipe     Recipe     @relation(fields: [recipe_id], references: [recipe_id], onDelete: Cascade)
   ingredient Ingredient @relation(fields: [ingredient_id], references: [ingredient_id], onDelete: Cascade)
 
@@ -183,7 +186,7 @@ model RecipeIngredient {
 }
 
 model NutritionInfo {
-  nutrition_id Int    @id @default(autoincrement())
+  nutrition_id Int     @id @default(autoincrement())
   protein      Float?
   carbs        Float?
   fats         Float?
@@ -192,8 +195,8 @@ model NutritionInfo {
   quantity     Float?
   unit         String?
 
-  recipe     RecipeInfo?   @relation("RecipeNutrition")
-  ingredient Ingredient?   @relation("IngredientNutrition")
+  recipe     RecipeInfo? @relation("RecipeNutrition")
+  ingredient Ingredient? @relation("IngredientNutrition")
 }
 
 model RecipeInfo {

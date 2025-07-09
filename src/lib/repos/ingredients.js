@@ -14,6 +14,9 @@ export async function getAllIngredients() {
 export async function getIngredientById(id) {
   return await prisma.ingredient.findUnique({
     where: { ingredient_id: id },
+    include: {
+      nutrition_info: true,
+    },
   })
 }
 

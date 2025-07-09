@@ -230,6 +230,8 @@ export async function addRecipe({
             data: {
                 recipe_id: recipe.recipe_id,
                 ingredient_id: ingredient.ingredient_id,
+                quantity: ing.recipe_ingredient.quantity ?? 0,
+                unit: ing.recipe_ingredient.unit ?? '',
             },
         })
     }
@@ -286,4 +288,19 @@ export async function clearRecipes() {
         console.error('Error al limpiar recetas:', error)
         throw error
     }
+}
+
+export async function getRecipeByIngredientId(id) {
+return await prisma.recipe.findMany({
+    where: {
+        ingredients: {
+            some: {
+                ingredient_id: id
+            }
+        }
+    },
+    include: {
+        types: true,
+    }
+})
 }

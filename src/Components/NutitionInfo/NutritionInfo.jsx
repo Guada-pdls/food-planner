@@ -12,11 +12,11 @@ const NutritionInfo = ({ calories, carbohydrates, fat, protein, fiber }) => {
             </thead>
             <tbody>
                 <tr>
-                    <td>{carbohydrates}</td>
-                    <td>{fat}</td>
-                    <td>{protein}</td>
-                    <td>{fiber}</td>
-                    <td>{calories}</td>
+                    <td>{carbohydrates.toFixed(2)}</td>
+                    <td>{fat.toFixed(2)}</td>
+                    <td>{protein.toFixed(2)}</td>
+                    <td>{fiber.toFixed(2)}</td>
+                    <td>{calories.toFixed(2)}</td>
                 </tr>
             </tbody>
         </table>

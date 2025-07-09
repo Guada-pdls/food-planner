@@ -73,7 +73,6 @@ model User {
 
 model Meal {
   meal_id Int      @id @default(autoincrement())
-  portion Float?
   date    DateTime
   type    String?
 
@@ -127,6 +126,7 @@ model Recipe {
 model MealRecipe {
   meal_id   Int
   recipe_id Int
+  portion   Float
 
   meal   Meal   @relation(fields: [meal_id], references: [meal_id], onDelete: Cascade)
   recipe Recipe @relation(fields: [recipe_id], references: [recipe_id], onDelete: Cascade)
@@ -190,6 +190,7 @@ model NutritionInfo {
   calories     Float?
   fiber        Float?
   quantity     Float?
+  unit         String?
 
   recipe     RecipeInfo?   @relation("RecipeNutrition")
   ingredient Ingredient?   @relation("IngredientNutrition")

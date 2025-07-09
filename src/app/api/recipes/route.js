@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getSuggestedRecipes, getFilteredRecipes, addRecipe } from '@/lib/repos/recipes'
+import { getSuggestedRecipes, getFilteredRecipes, addRecipe, clearRecipes } from '@/lib/repos/recipes'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]/route'
 // Soporta: ?page=1&limit=10&name=pasta&type=desayuno&ingredient=cebolla
@@ -65,5 +65,15 @@ export async function POST(req) {
   } catch (error) {
     console.error('Error procesando recetas en lote:', error)
     return NextResponse.json({ error: 'Error interno al crear recetas' }, { status: 500 })
+  }
+}
+
+export async function DELETE() {
+  try {
+    await clearRecipes()
+    return NextResponse.json({ ok: true }, { status: 200 })
+  } catch (error) {
+    console.error('Error limpiando recetas:', error)
+    return NextResponse.json({ error: 'Error interno al limpiar recetas' }, { status: 500 })
   }
 }

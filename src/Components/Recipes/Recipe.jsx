@@ -12,7 +12,7 @@ const Recipe = ({ id, name, image, types, cooking_time }) => {
         <footer className='card-actions justify-between items-center'>
           <div>
             {types.map((type, index) => {
-              return <div key={index} className="badge badge-outline badge-secondary">{type.type}</div>
+              return <div key={index} className="badge badge-outline badge-secondary me-1">{type.type}</div>
             })}
           </div>
           <Link href={`/recipes/${id}`} className='btn btn-primary'>Ver más</Link>

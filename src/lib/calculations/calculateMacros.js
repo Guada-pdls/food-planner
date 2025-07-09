@@ -13,7 +13,6 @@ const calculateMacros = (calories, gender, weight, physical_activity) => {
     'Intensa': 1.6
   };
   const protein = weight * activityLevel; 
-  console.log(activityLevel)
 
   // Fibra mínima y máxima según género
   const fiberRange = gender === 'Mujer' ? { min: 25, max: 32 } : { min: 30, max: 35 };

@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { CiSearch } from 'react-icons/ci'
-import Loader from '../Loader/Loader'
+import Loader from '../Feedback/Loader'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 const RecipeSearcher = () => {

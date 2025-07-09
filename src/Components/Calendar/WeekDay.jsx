@@ -3,6 +3,7 @@ import Link from "next/link"
 const mealTypes = ['Desayuno', 'Almuerzo', 'Merienda', 'Cena'];
 
 const WeekDay = ({ day, date, meals }) => {
+    console.log(date, meals)
     // Agrupar comidas por tipo
     const mealsByType = meals?.reduce((acc, meal) => {
         if (!acc[meal.type]) acc[meal.type] = [];
@@ -21,7 +22,13 @@ const WeekDay = ({ day, date, meals }) => {
                 <td key={type} className="align-top">
                     {mealsByType && mealsByType[type]
                         ? mealsByType[type].map((meal, idx) => (
-                            <div key={idx} className="mb-2 ml-2 font-medium">{meal.name}</div>
+                            <div key={idx} className="mb-2 ml-2">
+                                {meal.recipes?.map((recipeData, recipeIdx) => (
+                                    <div key={recipeIdx} className="font-medium">
+                                        {recipeData.recipe.name}
+                                    </div>
+                                ))}
+                            </div>
                         ))
                         : <span className="text-gray-400">-</span>
                     }

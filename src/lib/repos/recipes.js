@@ -213,12 +213,11 @@ export async function addRecipe({
             }
 
             const nutrition = await prisma.nutritionInfo.create({ data: nutritionData })
-
             ingredient = await prisma.ingredient.create({
                 data: {
                     name: ing.name,
-                    fridge: ing.fridge,
-                    freezer: ing.freezer,
+                    fridge: ing.fridge ?? 0,
+                    freezer: ing.freezer ?? 0,
                     category: ing.category,
                     recommendations: ing.recommendations,
                     image: ing.image,
@@ -249,4 +248,42 @@ export async function addRecipe({
             },
         },
     })
+}
+
+export async function deleteRecipe(recipe_id, nutrition_id) {
+    try {
+        await prisma.recipe.delete({
+            where: { recipe_id: recipe_id },
+        })
+        await prisma.recipeIngredient.deleteMany({
+            where: { recipe_id: recipe_id },
+        })
+        await prisma.recipeType.deleteMany({
+            where: { recipe_id: recipe_id },
+        })
+        await prisma.nutritionInfo.delete({
+            where: { nutrition_id: nutrition_id },
+        })
+        await prisma.recipeInfo.delete({
+            where: { recipe_id: recipe_id },
+        })
+        await prisma.mealRecipe.deleteMany({
+            where: { recipe_id: recipe_id },
+        })
+    } catch (error) {
+        console.error('Error al eliminar receta:', error)
+        throw error
+    }
+}
+
+export async function clearRecipes() {
+    try {
+        const recipes = await prisma.recipe.findMany()
+        for (const recipe of recipes) {
+            await deleteRecipe(recipe.recipe_id, recipe.nutrition_id)
+        }
+    } catch (error) {
+        console.error('Error al limpiar recetas:', error)
+        throw error
+    }
 }

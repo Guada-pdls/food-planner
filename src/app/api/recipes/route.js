@@ -63,8 +63,8 @@ export async function POST(req) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Error procesando recetas en lote:', error)
-    return NextResponse.json({ error: 'Error interno al crear recetas' }, { status: 500 })
+    console.error(error)
+    return NextResponse.json({ error: 'Error al crear receta' }, { status: 500 })
   }
 }
 

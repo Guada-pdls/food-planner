@@ -10,5 +10,4 @@ const page = async ({ params }) => {
         <RecipeDetail recipe={recipe} />
     )
 }
-
 export default page

@@ -4,7 +4,7 @@ import calculateCaloriesWithFAO from "@/lib/calculations/calculateCaloriesWithFA
 import calculateMacros from "@/lib/calculations/calculateMacros";
 import { useState } from "react";
 import MinAndMax from "@/Components/NutitionInfo/MinAndMax"
-
+import VerticalBarChart from "@/Components/Profile/VerticalChart";
 const Profile = ({ userData }) => {
     const [formData, setFormData] = useState(userData);
     const [error, setError] = useState(null);
@@ -114,9 +114,13 @@ const Profile = ({ userData }) => {
                     formData.physical_activity || userData.physical_activity
                 )
             } />
+            
 
             {error && <p className="ps-4 text-error">{error}</p>}
             {saved && <p className="ps-4 text-success">Datos guardados correctamente.</p>}
+
+           
+
         </form>
     );
 };

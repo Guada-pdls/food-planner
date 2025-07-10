@@ -75,7 +75,6 @@ const RecipeDetail = ({ recipe }) => {
               </tr>
             ) : (
               recipe.ingredients.map((ingredient, index) => (
-                console.log(ingredient),
                 <tr key={index}>
                   <td>{ingredient.ingredient.name}</td>
                   <td>{ingredient.ingredient.amount || "6 [unidades]"}</td>

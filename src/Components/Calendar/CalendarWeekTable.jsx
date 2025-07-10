@@ -1,7 +1,6 @@
 import WeekDay from './WeekDay'
 
 const CalendarWeekTable = ({ days }) => {
-    console.log(days)
     return (
         <div className="overflow-x-scroll">
             <table className="table text-center border-b border-b-base-200" >

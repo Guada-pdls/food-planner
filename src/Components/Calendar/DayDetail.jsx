@@ -80,10 +80,11 @@ const DayDetail = ({ meals: initialMeals, user }) => {
                                         };
 
                                         return (
-                                            <article key={recipeIndex} className="recipe-detail overflow-x-scroll">
+                                            <article key={recipeIndex} className="recipe-detail">
                                                 <RecipeOptions
                                                     {...recipe}
                                                     meal_id={meal.meal_id}
+                                                    portion={r.portion}
                                                     onDelete={handleMealDelete}
                                                 />
                                                 <NutritionInfo {...scaled} />

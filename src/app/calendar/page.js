@@ -5,34 +5,8 @@ import { useSession } from "next-auth/react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import calculateMacros from "@/lib/calculations/calculateMacros";
 import calculateCaloriesWithFAO from "@/lib/calculations/calculateCaloriesWithFAO";
-import { formatDate } from "@/utils/date";
+import { formatDate, getWeekRange } from "@/utils/date";
 import { generateMealDays } from "@/lib/planning/generateMealDays";
-
-function getWeekRange(refDate) {
-  // Crea una nueva fecha para no modificar la original.
-  const date = new Date(refDate);
-
-  // Obtiene el día de la semana (0 para Domingo, 1 para Lunes, ..., 6 para Sábado).
-  const day = date.getDay();
-
-  // Calcula el lunes de esa semana.
-  // Si el día es Domingo (0), retrocede 6 días. Si no, retrocede (día - 1) días.
-  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-  const start = new Date(date.setDate(diff));
-
-  // Calcula el domingo de esa semana sumando 6 días al lunes.
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-
-  // Formatea las fechas a ISO (YYYY-MM-DD).
-  const startISO = start.toISOString().split('T')[0];
-  const endISO = end.toISOString().split('T')[0];
-
-  return {
-    start: startISO,
-    end: endISO,
-  };
-}
 
 export default function Page() {
   const { data: session, status } = useSession();
@@ -95,7 +69,7 @@ export default function Page() {
       }
     } catch (error) {
       console.error(error);
-      alert("Hubo un error inesperado"); 
+      alert("Hubo un error inesperado");
     } finally {
       setLoadingDelete(false);
     }
@@ -103,73 +77,73 @@ export default function Page() {
 
 
   const getMeals = async (userId, startISO) => {
-      const params = new URLSearchParams({
-        userId,
-        startISO,
-        numDays: '7'
-      })
+    const params = new URLSearchParams({
+      userId,
+      startISO,
+      numDays: '7'
+    })
 
-      const res = await fetch(`/api/meals?${params}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-      })
+    const res = await fetch(`/api/meals?${params}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    })
 
-      const data = await res.json()
-      if (data.ok) {
-        setWeek(data.meals.days)
-      } else {
-        alert("Hubo un error inesperado") // TODO: Implement user-friendly error display or logging
-      }
+    const data = await res.json()
+    if (data.ok) {
+      setWeek(data.meals.days)
+    } else {
+      alert("Hubo un error inesperado") // TODO: Implement user-friendly error display or logging
     }
+  }
 
-    useEffect(() => {
-      if (status === "loading") return;
-      getMeals(session.user.id, weekRange.start, 7)
-    }, [weekRange, status]);
+  useEffect(() => {
+    if (status === "loading") return;
+    getMeals(session.user.id, weekRange.start, 7)
+  }, [weekRange, status]);
 
-    const changeWeek = (deltaDays) => {
-      const newDate = new Date(weekRange.start + 'T00:00:00');
-      newDate.setDate(newDate.getDate() + deltaDays);
-      setWeekRange(getWeekRange(newDate));
-    };
+  const changeWeek = (deltaDays) => {
+    const newDate = new Date(weekRange.start + 'T00:00:00');
+    newDate.setDate(newDate.getDate() + deltaDays);
+    setWeekRange(getWeekRange(newDate));
+  };
 
-    const startDate = new Date(weekRange.start + 'T00:00:00');
-    const endDate = new Date(weekRange.end + 'T00:00:00');
+  const startDate = new Date(weekRange.start + 'T00:00:00');
+  const endDate = new Date(weekRange.end + 'T00:00:00');
 
-    return (
-      <main className="pb-20 w-full">
-        <header>
-          <h1 className="title">Calendario de Comidas</h1>
-          <nav className="flex justify-between items-center w-full max-w-3xl px-4 pb-2">
-            <FaArrowLeft className="text-2xl cursor-pointer" onClick={() => changeWeek(-7)} />
-            <div>
-              <p className="text-2xl font-semibold px-4 text-center">
-                {startDate.toLocaleDateString("es-UY", { month: "long" })} {startDate.getFullYear()}
-              </p>
-              <p className="text-sm text-center">
-                Semana {formatDate(startDate)} - {formatDate(endDate)}
-              </p>
-            </div>
-            <FaArrowRight className="text-2xl cursor-pointer" onClick={() => changeWeek(7)} />
-          </nav>
-        </header>
-
-        <CalendarWeekTable days={week} />
+  return (
+    <main className="pb-20 w-full">
+      <header>
+        <h1 className="title">Calendario de Comidas</h1>
+        <nav className="flex justify-between items-center w-full max-w-3xl px-4 pb-2">
+          <FaArrowLeft className="text-2xl cursor-pointer" onClick={() => changeWeek(-7)} />
+          <div>
+            <p className="text-2xl font-semibold px-4 text-center">
+              {startDate.toLocaleDateString("es-UY", { month: "long" })} {startDate.getFullYear()}
+            </p>
+            <p className="text-sm text-center">
+              Semana {formatDate(startDate)} - {formatDate(endDate)}
+            </p>
+          </div>
+          <FaArrowRight className="text-2xl cursor-pointer" onClick={() => changeWeek(7)} />
+        </nav>
 
         <div className="flex justify-center py-4 bg-base-300">
           <button
-            className="btn w-1/4 btn-circle btn-error me-2"
+            className="btn w-fit px-4 btn-circle btn-error me-2"
             onClick={() => deleteMeals(session.user.id, weekRange.start)}
           >
-            {loadingDelete ? "Eliminando..." : "Eliminar"}
+            {loadingDelete ? "Borrando..." : "Borrar planificación"}
           </button>
           <button
-            className="btn btn-wide btn-circle btn-secondary"
+            className="btn w-fit px-4 btn-circle btn-secondary"
             onClick={() => fetchMeals(weekRange.start)}
           >
             {loading ? "Generando..." : "Generar automáticamente"}
           </button>
         </div>
-      </main>
-    );
-  }
+      </header>
+
+      <CalendarWeekTable days={week} />
+    </main>
+  );
+}

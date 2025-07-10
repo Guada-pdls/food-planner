@@ -18,8 +18,9 @@ export async function generateDailyMeals(
     const MEAL_SLOTS = ['Desayuno', 'Almuerzo', 'Merienda', 'Cena'];
     const date = new Date(dayObj.iso);
 
-    // LIMPIAR meals al inicio para evitar duplicados
-    dayObj.meals = [];
+    if (dayObj.meals.length > 0) {
+        return "Ya tienes comidas registradas para el día " + dayObj.iso + ". Por favor, elimina las comidas existentes para generar nuevas comidas.";
+    }
 
     const getMacroValue = (val) => val?.estimated ?? val?.min;
 
@@ -29,6 +30,7 @@ export async function generateDailyMeals(
         protein: getMacroValue(macroGoals.protein),
         carbs: getMacroValue(macroGoals.carbohydrates),
         fats: getMacroValue(macroGoals.fat),
+        fiber: getMacroValue(macroGoals.fiber),
     };
 
     // Distribución de calorías por tipo de comida (percentajes aproximados)
@@ -64,28 +66,45 @@ export async function generateDailyMeals(
     // Función para calcular la porción óptima usando múltiples macros
     const calculateOptimalPortion = (recipe, targetMacros) => {
         const n = recipe.nutrition;
+        let portion = targetMacros.calories / n.calories;
 
-        // Calcular porciones basadas en cada macro
-        const portions = {
-            calories: targetMacros.calories / n.calories,
-            protein: targetMacros.protein / n.protein,
-            carbs: targetMacros.carbs / n.carbs,
-            fats: targetMacros.fats / n.fats
-        };
-
-        // Usar la porción de calorías como base, pero ajustar si otros macros son críticos
-        let optimalPortion = portions.calories;
-
-        // Si la proteína es muy baja comparada con el objetivo, priorizar proteína
-        if (portions.protein > portions.calories * 1.5) {
-            optimalPortion = Math.min(portions.protein, portions.calories * 1.3);
+        if (n.carbs * portion > targetMacros.carbs) portion = targetMacros.carbs / n.carbs; // Si la porción excede la cantidad de carbohidratos objetivo, ajustar la porción a la cantidad de carbohidratos objetivo
+        if (n.protein * portion > targetMacros.protein) portion = targetMacros.protein / n.protein; // Idem para proteins y demás
+        if (n.fats * portion > targetMacros.fats) portion = targetMacros.fats / n.fats;
+        if (n.fiber * portion > targetMacros.fiber) portion = targetMacros.fiber / n.fiber;
+        
+        if (targetMacros.calories.estimated) { // Si la porción viene con estimados esta ajustando las últimas comidas, asi que podemos usar los maximos y mínimos
+            if (n.calories * portion > targetMacros.calories.max) portion = targetMacros.calories.estimated / n.calories
+            if (n.protein * portion > targetMacros.protein.max) portion = targetMacros.protein.estimated / n.protein
+            if (n.carbs * portion > targetMacros.carbohydrates.max) portion = targetMacros.carbohydrates.estimated / n.carbohydrates
+            if (n.fats * portion > targetMacros.fats.max) portion = targetMacros.fats.estimated / n.fats
+            if (n.fiber * portion > targetMacros.fiber.max) portion = targetMacros.fiber.estimated / n.fiber
         }
+        
+        return portion;
+        //
+        // const n = recipe.nutrition;
 
-        // Limitar a rangos realistas
-        return Math.max(0.3, Math.min(optimalPortion, 3.0));
+        // // Calcular porciones basadas en cada macro
+        // const portions = {
+        //     calories: targetMacros.calories / n.calories,
+        //     protein: targetMacros.protein / n.protein,
+        //     carbs: targetMacros.carbs / n.carbs,
+        //     fats: targetMacros.fats / n.fats
+        // };
+
+        // // Usar la porción de calorías como base, pero ajustar si otros macros son críticos
+        // let optimalPortion = portions.calories;
+
+        // // Si la proteína es muy baja comparada con el objetivo, priorizar proteína
+        // if (portions.protein > portions.calories * 1.5) {
+        //     optimalPortion = Math.min(portions.protein, portions.calories * 1.3);
+        // }
+
+        // // Limitar a rangos realistas
+        // return Math.max(0.3, Math.min(optimalPortion, 3.0));
     };
 
-    // NUEVA FUNCIÓN: Seleccionar receta con variedad
     const selectRecipeWithVariety = (pool, targetMacros, usedRecipes = new Set()) => {
         // Filtrar recetas ya usadas para evitar repetición
         const availablePool = pool.filter(r => !usedRecipes.has(r.recipe_id));
@@ -187,7 +206,6 @@ export async function generateDailyMeals(
             continue;
         }
 
-        // USAR LA NUEVA FUNCIÓN DE SELECCIÓN CON VARIEDAD
         const choice = selectRecipeWithVariety(pool, mealTarget, usedRecipesThisDay);
 
         if (!choice) {
@@ -300,15 +318,32 @@ export async function generateDailyMeals(
             const protein = m.nutrition.protein * m.portion;
             const carbs = m.nutrition.carbs * m.portion;
             const fats = m.nutrition.fats * m.portion;
+            const fiber = m.nutrition.fiber * m.portion;
 
             acc.calories += calories;
             acc.protein += protein;
             acc.carbs += carbs;
             acc.fats += fats;
+            acc.fiber += fiber;
             return acc;
         },
         { calories: 0, protein: 0, carbs: 0, fats: 0 }
     );
+
+    if (finalTotal.calories < totalTargets.calories) {
+        // Si no alcanzamos la cantidad de calorías, ajustar la porción del desayuno
+        const breakfast = dayObj.meals.find((m) => m.type === 'Desayuno');
+        const targetMacros = {
+            calories: macroGoals.calories.estimated - finalTotal.calories,
+            protein: macroGoals.protein.estimated - finalTotal.protein,
+            carbs: macroGoals.carbohydrates.estimated - finalTotal.carbs,
+            fats: macroGoals.fat.estimated - finalTotal.fats,
+            fiber: macroGoals.fiber.estimated - finalTotal.fiber,
+        };
+        
+        // Ajustamos la porción del desayuno para alcanzar la cantidad de calorías
+        breakfast.portion = calculateOptimalPortion(breakfast, targetMacros)
+    }
 
     dayObj.meals.forEach((meal, idx) => {
         const cal = meal.nutrition.calories * meal.portion;

@@ -37,3 +37,13 @@ export async function getIngredientByBarcode(barcode) {
     },
   })
 }
+
+export const getIngredientsByMeal = async (mealId) => {
+    const meal = await prisma.meal.findUnique({
+        where: { meal_id: mealId },
+        include: {
+            ingredients: true
+        }
+    })
+    return meal.ingredients
+}

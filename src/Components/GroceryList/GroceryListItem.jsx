@@ -1,21 +1,20 @@
 "use client";
-import React from "react";
 
 const GroceryListItem = ({ ingredient, onToggle }) => {
   return (
-    <div className="ingredientContainer  flex items-center mb-2">
+    <div className="ingredientContainer flex items-center my-2 ms-4">
       <input
         type="checkbox"
-        className="checkbox"
+        className="checkbox checkbox-primary"
         checked={ingredient.checked}
         onChange={onToggle}
       />
       <p
         className={`ml-3 w-[33%] ${
-          ingredient.checked ? "line-through text-gray-500" : ""
+          ingredient.checked && "line-through text-gray-500"
         }`}
       >
-        {ingredient.name}
+        {ingredient.name} - {ingredient.quantity} {ingredient.unit}
       </p>
     </div>
   );

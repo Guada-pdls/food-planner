@@ -1,14 +1,15 @@
 "use client";
 import React, { useState } from "react";
 import GroceryListItem from "./GroceryListItem";
+import GroceryButtons from "./GroceryButtons";
 
 const initialIngredients = [
-  { id: 1, name: "Huevos", checked: false },
-  { id: 2, name: "Leche", checked: false },
-  { id: 3, name: "Pan", checked: false },
+  { id: 1, name: "Huevos", checked: false, quantity: 2, unit: "unidades" },
+  { id: 2, name: "Leche", checked: false, quantity: 1, unit: "litro" },
+  { id: 3, name: "Pan", checked: false, quantity: 1, unit: "unidad" },
 ];
 
-const GroceryListManager = () => {
+const GroceryListManager = ({ ingredientss, id }) => {
   const [ingredients, setIngredients] = useState(initialIngredients);
 
   const toggleCheck = (id) => {
@@ -22,8 +23,9 @@ const GroceryListManager = () => {
   const checked = ingredients.filter((item) => item.checked);
 
   return (
-    <div className="">
-      <h2 className="text-lg font-bold mb-2">Pendientes</h2>
+    <>
+      <GroceryButtons ingredients={ingredients} setIngredients={setIngredients} id={id} />
+      <h2 className="subtitle">Pendientes</h2>
       {unchecked.map((item) => (
         <GroceryListItem
           key={item.id}
@@ -32,7 +34,7 @@ const GroceryListManager = () => {
         />
       ))}
 
-      <h2 className="text-lg font-bold mt-6 mb-2">Comprados</h2>
+      <h2 className="subtitle">Comprados</h2>
       {checked.map((item) => (
         <GroceryListItem
           key={item.id}
@@ -40,7 +42,7 @@ const GroceryListManager = () => {
           onToggle={() => toggleCheck(item.id)}
         />
       ))}
-    </div>
+    </>
   );
 };
 

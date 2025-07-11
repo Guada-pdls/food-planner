@@ -27,7 +27,7 @@ const GroceryListManager = ({ initialIngredients, id }) => {
     setIngredients(updated);
   };
   return (
-    <>
+    <div className="pb-30">
       <GroceryButtons ingredients={ingredients} setIngredients={setIngredients} id={id} />
       <h2 className="subtitle">Pendientes</h2>
       {unchecked.map((item) => (
@@ -48,7 +48,7 @@ const GroceryListManager = ({ initialIngredients, id }) => {
           onToggle={() => toggleCheck(item.id)}
         />
       ))}
-    </>
+    </div>
   );
 };
 

@@ -75,16 +75,23 @@ export const authOptions = {
             }
             if (trigger === "update") {
                 const dbUser = await getUserData(token.email)
-                token.data_completed = isComplete(dbUser)
-                token.dislike_ingredients = dbUser?.dislike_ingredients ? JSON.parse(dbUser.dislike_ingredients) : []
                 token.age = dbUser?.age
                 token.height = dbUser?.height
                 token.weight = dbUser?.weight
                 token.gender = dbUser?.gender
                 token.physical_activity = dbUser?.physical_activity
+                token.data_completed = isComplete(dbUser)
+                token.dislike_ingredients = dbUser?.dislike_ingredients ? JSON.parse(dbUser.dislike_ingredients) : []
             }
             return token
         },
+    },
+    events: {
+        async createUser({user}) {
+            await prisma.groceryList.create({
+                data: { user_id: user.id }
+            })
+        }
     },
     colorScheme: {
         primary: "#58C521",

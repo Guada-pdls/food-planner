@@ -5,7 +5,7 @@ import { FaExchangeAlt } from "react-icons/fa";
 import { useState } from "react";
 import Alert from "../Feedback/Alert";
 
-const RecipeOptions = ({ name, meal_id, onDelete }) => {
+const RecipeOptions = ({ name, meal_id, portion, onDelete }) => {
     const [isDeleting, setIsDeleting] = useState(false);
 
     const handleDeleteClick = () => {
@@ -58,7 +58,10 @@ const RecipeOptions = ({ name, meal_id, onDelete }) => {
     return (
         <>
             <header className="flex justify-between">
-                <h3 className="subtitle2">{name}</h3>
+                <h3 className="subtitle2">
+                    {name}
+                     - Porción: {portion.toFixed(1) || '1'}
+                    </h3>
                 <div className="flex gap-2">
                     <button className="btn btn-lg btn-circle">
                         <FaExchangeAlt />

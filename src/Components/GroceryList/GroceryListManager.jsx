@@ -1,15 +1,24 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import GroceryListItem from "./GroceryListItem";
+import GroceryButtons from "./GroceryButtons";
 
-const initialIngredients = [
-  { id: 1, name: "Huevos", checked: false },
-  { id: 2, name: "Leche", checked: false },
-  { id: 3, name: "Pan", checked: false },
-];
-
-const GroceryListManager = () => {
+const GroceryListManager = ({ initialIngredients, id }) => {
+  console.log(initialIngredients)
   const [ingredients, setIngredients] = useState(initialIngredients);
+  const [checked, setChecked] = useState([]);
+  const [unchecked, setUnchecked] = useState([]);
+
+  useEffect(() => {
+    if (ingredients && ingredients.length > 0) {
+      setChecked(ingredients.filter((item) => item.checked));
+      setUnchecked(ingredients.filter((item) => !item.checked));
+    }
+  }, [ingredients]);
+
+  useEffect(() => {
+    setIngredients(initialIngredients);
+  }, [initialIngredients]);
 
   const toggleCheck = (id) => {
     const updated = ingredients.map((item) =>
@@ -17,30 +26,29 @@ const GroceryListManager = () => {
     );
     setIngredients(updated);
   };
-
-  const unchecked = ingredients.filter((item) => !item.checked);
-  const checked = ingredients.filter((item) => item.checked);
-
   return (
-    <div className="">
-      <h2 className="text-lg font-bold mb-2">Pendientes</h2>
+    <>
+      <GroceryButtons ingredients={ingredients} setIngredients={setIngredients} id={id} />
+      <h2 className="subtitle">Pendientes</h2>
       {unchecked.map((item) => (
         <GroceryListItem
           key={item.id}
           ingredient={item}
+          name={item.ingredient.name}
           onToggle={() => toggleCheck(item.id)}
         />
       ))}
 
-      <h2 className="text-lg font-bold mt-6 mb-2">Comprados</h2>
+      <h2 className="subtitle">Comprados</h2>
       {checked.map((item) => (
         <GroceryListItem
           key={item.id}
           ingredient={item}
+          name={item.ingredient.name}
           onToggle={() => toggleCheck(item.id)}
         />
       ))}
-    </div>
+    </>
   );
 };
 

@@ -1,6 +1,6 @@
 const { default: IngredientsSection } = require("./IngredientsSection");
 
-const categories = ['Frutas', 'Verduras', 'Carnes', 'Legumbres', 'Lácteos'];
+const categories = ['Frutas', 'Verduras', 'Carnes', 'Legumbres', 'Lácteos', 'Pescados'];
 
 const Ingredients = () => {
   return (

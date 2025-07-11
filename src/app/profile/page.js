@@ -30,7 +30,7 @@ const page = async () => {
   totals = { calories: 2000, carbohydrates: 180, fat: 60, protein: 85, fiber: 30 }
 
   return (
-    <main className="pb-20 flex flex-col justify-between min-h-screen">
+    <main className="mb-32 flex flex-col justify-between min-h-screen">
       <div>
         <h1 className="title">Perfil</h1>
         <Profile userData={userData} />

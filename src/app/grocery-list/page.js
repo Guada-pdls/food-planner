@@ -17,7 +17,7 @@ const GroceryPage = () => {
           },
         });
         const data = await response.json();
-        setGroceryList(data);
+        setGroceryList(data.items);
       } catch (error) {
         console.error("Error fetching grocery list:", error);
       }
@@ -26,12 +26,12 @@ const GroceryPage = () => {
     if (status === "authenticated") {
       fetchGroceryList();
     }
-  }, [])
+  }, [status])
 
   return (
-    <div className="h-screen flex-col justify-center  bg-base-100 pl-[1rem]">
+    <div className="h-screen flex-col justify-center pb-30 bg-base-100 pl-[1rem]">
       <h1 className="title">Lista de compras</h1>
-      <GroceryListManager ingredientss={groceryList} id={session.user.id} />
+      <GroceryListManager initialIngredients={groceryList} id={session?.user?.id} />
     </div>
   );
 };

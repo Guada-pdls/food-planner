@@ -25,7 +25,7 @@ const GroceryButtons = ({ ingredients, setIngredients, id }) => {
         })
 
         const data = await response.json()
-        console.log(data)
+        setIngredients(data.grocery_list)
 
         setLoadingGenerate(false)
     }

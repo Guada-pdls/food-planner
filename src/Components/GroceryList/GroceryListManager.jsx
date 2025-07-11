@@ -1,16 +1,24 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import GroceryListItem from "./GroceryListItem";
 import GroceryButtons from "./GroceryButtons";
 
-const initialIngredients = [
-  { id: 1, name: "Huevos", checked: false, quantity: 2, unit: "unidades" },
-  { id: 2, name: "Leche", checked: false, quantity: 1, unit: "litro" },
-  { id: 3, name: "Pan", checked: false, quantity: 1, unit: "unidad" },
-];
-
-const GroceryListManager = ({ ingredientss, id }) => {
+const GroceryListManager = ({ initialIngredients, id }) => {
+  console.log(initialIngredients)
   const [ingredients, setIngredients] = useState(initialIngredients);
+  const [checked, setChecked] = useState([]);
+  const [unchecked, setUnchecked] = useState([]);
+
+  useEffect(() => {
+    if (ingredients && ingredients.length > 0) {
+      setChecked(ingredients.filter((item) => item.checked));
+      setUnchecked(ingredients.filter((item) => !item.checked));
+    }
+  }, [ingredients]);
+
+  useEffect(() => {
+    setIngredients(initialIngredients);
+  }, [initialIngredients]);
 
   const toggleCheck = (id) => {
     const updated = ingredients.map((item) =>
@@ -18,10 +26,6 @@ const GroceryListManager = ({ ingredientss, id }) => {
     );
     setIngredients(updated);
   };
-
-  const unchecked = ingredients.filter((item) => !item.checked);
-  const checked = ingredients.filter((item) => item.checked);
-
   return (
     <>
       <GroceryButtons ingredients={ingredients} setIngredients={setIngredients} id={id} />
@@ -30,6 +34,7 @@ const GroceryListManager = ({ ingredientss, id }) => {
         <GroceryListItem
           key={item.id}
           ingredient={item}
+          name={item.ingredient.name}
           onToggle={() => toggleCheck(item.id)}
         />
       ))}
@@ -39,6 +44,7 @@ const GroceryListManager = ({ ingredientss, id }) => {
         <GroceryListItem
           key={item.id}
           ingredient={item}
+          name={item.ingredient.name}
           onToggle={() => toggleCheck(item.id)}
         />
       ))}

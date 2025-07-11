@@ -1,6 +1,6 @@
 "use client";
 
-const GroceryListItem = ({ ingredient, onToggle }) => {
+const GroceryListItem = ({ ingredient, onToggle, name }) => {
   return (
     <div className="ingredientContainer flex items-center my-2 ms-4">
       <input
@@ -10,11 +10,11 @@ const GroceryListItem = ({ ingredient, onToggle }) => {
         onChange={onToggle}
       />
       <p
-        className={`ml-3 w-[33%] ${
+        className={`ml-3 ${
           ingredient.checked && "line-through text-gray-500"
         }`}
       >
-        {ingredient.name} - {ingredient.quantity} {ingredient.unit}
+        {name} - {ingredient.quantity} {ingredient.unit}
       </p>
     </div>
   );

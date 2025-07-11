@@ -9,7 +9,6 @@ export async function GET(req, { params }) {
     } catch (error) {
         console.error("Error fetching grocery list:", error);
         return NextResponse.json({ error: "Failed to fetch grocery list" }, { status: 500 })
-    
     }
 }
 
